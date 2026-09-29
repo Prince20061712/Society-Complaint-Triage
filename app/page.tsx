@@ -32,44 +32,45 @@ export default function ResidentPortalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#E0E5EC] text-[#3D4852] font-body antialiased">
+    <div className="min-h-screen bg-[#E0E5EC] text-[#3D4852] font-body antialiased w-full max-w-full overflow-x-hidden">
       {/* Top Soft Header */}
-      <header className="h-18 bg-[#E0E5EC] px-8 flex items-center justify-between sticky top-0 z-40 [box-shadow:0_6px_16px_rgb(163,177,198,0.35)]">
-        <div className="flex items-center gap-4">
-          <div className="w-11 h-11 rounded-2xl neu-inset-deep flex items-center justify-center text-[#6C63FF]">
-            <span className="material-symbols-outlined text-[24px]">apartment</span>
+      <header className="h-16 sm:h-18 bg-[#E0E5EC] px-4 sm:px-8 flex items-center justify-between sticky top-0 z-40 [box-shadow:0_6px_16px_rgb(163,177,198,0.35)] w-full">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl neu-inset-deep flex items-center justify-center text-[#6C63FF] shrink-0">
+            <span className="material-symbols-outlined text-[22px] sm:text-[24px]">apartment</span>
           </div>
-          <div>
-            <span className="font-display font-extrabold text-base text-[#3D4852] tracking-tight">
+          <div className="min-w-0">
+            <span className="font-display font-extrabold text-sm sm:text-base text-[#3D4852] tracking-tight truncate block">
               Green Valley Society
             </span>
-            <span className="hidden sm:inline-block ml-3 px-3 py-0.5 rounded-full neu-inset-sm text-[#6B7280] text-xs font-semibold">
-              Wing A-D • 120 Flats
+            <span className="text-[10px] sm:text-xs text-[#6B7280]">
+              Resident Portal • Wing A-D
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 px-5 py-2.5 neu-btn text-xs font-bold text-[#6C63FF] hover:text-[#8B84FF] transition-all"
+            className="inline-flex items-center gap-1.5 px-3.5 sm:px-5 py-2 sm:py-2.5 neu-btn text-xs font-bold text-[#6C63FF] hover:text-[#8B84FF] transition-all min-h-[44px]"
           >
-            <span className="material-symbols-outlined text-[18px]">dashboard</span>
-            <span>Committee Dashboard</span>
+            <span className="material-symbols-outlined text-[16px] sm:text-[18px]">dashboard</span>
+            <span className="hidden sm:inline">Committee Dashboard</span>
+            <span className="sm:hidden">Dashboard</span>
           </Link>
         </div>
       </header>
 
       {/* Hero section */}
-      <main className="max-w-4xl mx-auto px-6 py-12 space-y-10">
-        <div className="text-center space-y-3">
-          <span className="inline-block px-4 py-1.5 rounded-full neu-inset-sm text-xs font-bold text-[#6C63FF]">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-12 space-y-8 sm:space-y-10 w-full min-w-0 overflow-x-hidden">
+        <div className="text-center space-y-2.5 sm:space-y-3">
+          <span className="inline-block px-3.5 sm:px-4 py-1 sm:py-1.5 rounded-full neu-inset-sm text-[11px] sm:text-xs font-bold text-[#6C63FF]">
             COMMUNITY FIRST RESIDENT DESK
           </span>
-          <h1 className="font-display font-extrabold text-4xl sm:text-5xl text-[#3D4852] tracking-tight">
+          <h1 className="font-display font-extrabold text-2xl sm:text-4xl lg:text-5xl text-[#3D4852] tracking-tight">
             Society Complaint Triage
           </h1>
-          <p className="text-base text-[#6B7280] max-w-xl mx-auto leading-relaxed">
+          <p className="text-xs sm:text-base text-[#6B7280] max-w-xl mx-auto leading-relaxed">
             Report any residential maintenance issue in <strong>English, Hindi, or Hinglish</strong>. The AI triage
             engine immediately routes urgent problems to vendors &amp; committee volunteers.
           </p>
@@ -79,26 +80,26 @@ export default function ResidentPortalPage() {
         <ComplaintForm onSubmitted={handleNewSubmission} />
 
         {/* Recent Society Queue */}
-        <div className="space-y-6 pt-6">
-          <div className="flex items-center justify-between pb-2">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl neu-inset-deep flex items-center justify-center text-[#6C63FF]">
-                <span className="material-symbols-outlined text-[20px]">dynamic_feed</span>
+        <div className="space-y-4 sm:space-y-6 pt-4 sm:pt-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2 gap-2">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl neu-inset-deep flex items-center justify-center text-[#6C63FF] shrink-0">
+                <span className="material-symbols-outlined text-[18px] sm:text-[20px]">dynamic_feed</span>
               </div>
-              <h3 className="font-display font-bold text-xl text-[#3D4852] tracking-tight">
+              <h3 className="font-display font-bold text-lg sm:text-xl text-[#3D4852] tracking-tight">
                 Recent Society Complaints
               </h3>
             </div>
             <Link
               href="/complaints"
-              className="text-[#6C63FF] hover:text-[#8B84FF] text-xs font-bold flex items-center gap-1 transition-colors"
+              className="text-[#6C63FF] hover:text-[#8B84FF] text-xs font-bold flex items-center gap-1 transition-colors self-start sm:self-auto min-h-[36px]"
             >
               <span>View all on Complaints Register</span>
               <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
             </Link>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {recentComplaints.map((c) => (
               <ComplaintCard key={c.id} complaint={c} />
             ))}
@@ -106,7 +107,7 @@ export default function ResidentPortalPage() {
         </div>
       </main>
 
-      <footer className="mt-16 py-8 text-center text-xs text-[#6B7280]">
+      <footer className="mt-12 sm:mt-16 py-6 sm:py-8 text-center text-[11px] sm:text-xs text-[#6B7280]">
         Green Valley Resident Welfare Association • Molded Soft UI Complaint System
       </footer>
     </div>

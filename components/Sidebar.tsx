@@ -16,7 +16,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeCount = 26 }) => {
   const isResident = pathname === '/';
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-[#E0E5EC] z-50 flex flex-col justify-between py-6 px-5 [box-shadow:6px_0_16px_rgb(163,177,198,0.5)]">
+    <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-64 bg-[#E0E5EC] z-50 flex-col justify-between py-6 px-5 [box-shadow:6px_0_16px_rgb(163,177,198,0.5)]">
       <div className="flex flex-col gap-6">
         {/* Brand / Logo with Neumorphic Inset Well */}
         <Link href="/dashboard" className="flex items-center gap-3.5 group">

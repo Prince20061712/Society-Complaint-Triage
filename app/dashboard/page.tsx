@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Sidebar } from '@/components/Sidebar';
-import { Header } from '@/components/Header';
+import { AppShell } from '@/components/AppShell';
 import { DashboardStats } from '@/components/DashboardStats';
 import { ComplaintCard } from '@/components/ComplaintCard';
 import { Complaint, DashboardStatsData } from '@/types/complaint';
@@ -59,8 +58,7 @@ export default function DashboardCommandCenterPage() {
     fetchDashboardData();
   }, []);
 
-  // Focused "Needs Attention Right Now" queue:
-  // Shows unresolved emergency, urgent, and high items, or the top 4 critical tickets
+  // Focused "Needs Attention Right Now" queue: top critical tickets
   const needsAttentionQueue = useMemo(() => {
     let active = complaints.filter((c) => c.status === 'OPEN' || c.status === 'IN_PROGRESS');
 
@@ -81,7 +79,6 @@ export default function DashboardCommandCenterPage() {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
-    // Concise queue: only the top critical items requiring immediate committee action
     return active.slice(0, 4);
   }, [complaints, isZeroUrgentMode]);
 
@@ -97,303 +94,295 @@ export default function DashboardCommandCenterPage() {
   };
 
   return (
-    <div className="bg-[#E0E5EC] min-h-screen text-[#3D4852] font-body antialiased">
-      <Sidebar activeCount={activeCount} />
-
-      <div className="pl-64">
-        <Header />
-
-        <main className="relative pt-18 w-full min-h-screen pb-16">
-          <div className="p-8 space-y-8 max-w-[1440px] mx-auto w-full">
-            {/* Alert notification banner if triggered */}
-            {alertNotice && (
-              <div className="p-4 rounded-2xl neu-flat text-[#3D4852] flex items-center justify-between transition-all animate-in fade-in">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-xl neu-inset-deep flex items-center justify-center text-[#38B2AC]">
-                    <span className="material-symbols-outlined text-[18px]">check_circle</span>
-                  </div>
-                  <span className="text-sm font-semibold">{alertNotice}</span>
-                </div>
-                <button onClick={() => setAlertNotice(null)} className="neu-btn p-1.5 hover:text-[#E53E3E]">
-                  <span className="material-symbols-outlined text-[18px]">close</span>
-                </button>
+    <AppShell activeCount={activeCount}>
+      <main className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 max-w-[1440px] mx-auto w-full min-w-0 overflow-x-hidden">
+        {/* Alert notification banner */}
+        {alertNotice && (
+          <div className="p-3.5 sm:p-4 rounded-2xl neu-flat text-[#3D4852] flex items-center justify-between transition-all animate-in fade-in">
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+              <div className="w-8 h-8 rounded-xl neu-inset-deep flex items-center justify-center text-[#38B2AC] shrink-0">
+                <span className="material-symbols-outlined text-[18px]">check_circle</span>
               </div>
-            )}
+              <span className="text-xs sm:text-sm font-semibold truncate">{alertNotice}</span>
+            </div>
+            <button onClick={() => setAlertNotice(null)} className="neu-btn p-1.5 hover:text-[#E53E3E] shrink-0 cursor-pointer">
+              <span className="material-symbols-outlined text-[18px]">close</span>
+            </button>
+          </div>
+        )}
 
-            {/* Header Greeting & Command Center Status */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-              <div className="space-y-1">
-                <div className="flex items-center gap-3">
-                  <h1 className="font-display font-extrabold text-3xl text-[#3D4852] tracking-tight">
-                    Committee Command Center
-                  </h1>
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold neu-inset-sm text-[#6C63FF]">
-                    Active Triage
-                  </span>
+        {/* Header Greeting & Command Center Status */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6">
+          <div className="space-y-1">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-[#3D4852] tracking-tight">
+                Committee Command Center
+              </h1>
+              <span className="inline-flex items-center px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs font-bold neu-inset-sm text-[#6C63FF]">
+                Active Triage
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-[#6B7280]">
+              What needs attention right now across Green Valley Society (Wing A, B, C &amp; D).
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+            {/* AI Engine Status Pill */}
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-2xl neu-inset-sm text-xs">
+              <span className="material-symbols-outlined text-[16px] sm:text-[18px] text-[#6C63FF]">auto_awesome</span>
+              <span className="font-bold text-[#3D4852]">AI Triage: Online</span>
+              <span className="inline-block w-2 h-2 rounded-full bg-[#38B2AC]"></span>
+              <span className="text-[#6B7280] hidden sm:inline">
+                {stats.triagedThisHour} triaged this hour
+              </span>
+            </div>
+
+            {/* Refresh and View Register Buttons */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <button
+                onClick={fetchDashboardData}
+                className="w-10 h-10 rounded-2xl neu-btn flex items-center justify-center text-[#3D4852] hover:text-[#6C63FF] transition-all cursor-pointer shrink-0"
+                title="Refresh command center"
+                type="button"
+              >
+                <span className={`material-symbols-outlined text-[20px] ${loading ? 'animate-spin' : ''}`}>
+                  refresh
+                </span>
+              </button>
+
+              <Link
+                href="/complaints"
+                className="px-3.5 sm:px-4 py-2.5 rounded-2xl neu-btn text-xs font-bold text-[#6C63FF] hover:text-[#8B84FF] transition-all flex items-center gap-1.5 shrink-0 min-h-[44px]"
+              >
+                <span className="material-symbols-outlined text-[18px]">inbox</span>
+                <span>Full Register ({activeCount})</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Priority Summary Cards (Grid of 2 on mobile, 4 on desktop) */}
+        <DashboardStats
+          urgent={urgentCount}
+          high={highCount}
+          medium={mediumCount}
+          low={lowCount}
+        />
+
+        {/* Triage Velocity & SLA Performance Banner */}
+        <div className="neu-card p-4 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl neu-inset-deep text-[#6C63FF] flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined text-[22px] sm:text-[26px]">smart_toy</span>
+            </div>
+            <div>
+              <span className="text-sm sm:text-base font-bold font-display text-[#3D4852] block">
+                Triage Velocity: {stats.velocityPercent}% classified under 45 seconds
+              </span>
+              <p className="text-xs text-[#6B7280] mt-0.5">
+                Automatic vendor dispatch active for Otis Elevators, Mahavir Plumbing &amp; Security Desk
+              </p>
+            </div>
+          </div>
+
+          {/* Miniature SLA sparkline */}
+          <div className="flex items-center gap-3 sm:gap-4 shrink-0 self-end md:self-auto">
+            <div className="text-right">
+              <div className="text-[10px] sm:text-[11px] font-bold text-[#6B7280] uppercase tracking-wider">
+                Avg SLA Response
+              </div>
+              <div className="text-base sm:text-lg font-extrabold text-[#3D4852] font-display tabular-nums">
+                {stats.avgSlaResponse}
+              </div>
+            </div>
+            <div className="p-1.5 sm:p-2 rounded-2xl neu-inset-sm flex items-center justify-center">
+              <svg className="w-20 sm:w-24 h-6 sm:h-7 text-[#6C63FF] overflow-visible" fill="none" viewBox="0 0 100 30">
+                <path
+                  d="M 0,22 Q 20,28 35,15 T 70,12 T 100,5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeWidth="2.5"
+                ></path>
+                <circle className="fill-[#6C63FF]" cx="100" cy="5" r="3.5"></circle>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Concise 'Needs Attention Right Now' Section */}
+        <div className="space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <h2 className="font-display font-extrabold text-xl sm:text-2xl text-[#3D4852] tracking-tight">
+                Needs Attention Right Now
+              </h2>
+              <span className="px-2.5 py-0.5 rounded-full neu-inset-sm text-xs font-bold text-[#C53030]">
+                Top Priority
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              {/* Triage Mode Toggle */}
+              <button
+                onClick={() => setIsFastTriage(!isFastTriage)}
+                className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl transition-all text-xs font-bold cursor-pointer min-h-[44px] ${
+                  isFastTriage
+                    ? 'neu-btn-primary'
+                    : 'neu-btn text-[#6C63FF]'
+                }`}
+                type="button"
+              >
+                <span className="material-symbols-outlined text-[16px] sm:text-[18px]">
+                  {isFastTriage ? 'done_all' : 'bolt'}
+                </span>
+                <span>{isFastTriage ? 'Fast-Triage Active' : 'Triage Mode'}</span>
+              </button>
+
+              {/* Demo Zero Urgent Button */}
+              <button
+                onClick={() => setIsZeroUrgentMode(!isZeroUrgentMode)}
+                className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer min-h-[44px] ${
+                  isZeroUrgentMode
+                    ? 'neu-pressed text-[#38B2AC]'
+                    : 'neu-btn text-[#3D4852]'
+                }`}
+                title="Preview zero urgent state"
+                type="button"
+              >
+                <span className="material-symbols-outlined text-[16px] sm:text-[18px]">celebration</span>
+                <span>{isZeroUrgentMode ? 'Exit Demo' : 'Demo Zero'}</span>
+              </button>
+
+              {/* View All Complaints link */}
+              <Link
+                href="/complaints"
+                className="inline-flex items-center gap-1 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl neu-btn text-xs font-bold text-[#3D4852] hover:text-[#6C63FF] transition-all min-h-[44px]"
+              >
+                <span>Full Register</span>
+                <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Live Zero Urgent Banner (When triggered) */}
+          {isZeroUrgentMode && (
+            <div className="neu-card p-6 sm:p-8 text-center space-y-3 animate-in fade-in">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl neu-inset-deep text-[#38B2AC] mx-auto flex items-center justify-center">
+                <span className="material-symbols-outlined text-[28px] sm:text-[32px]">verified</span>
+              </div>
+              <h3 className="font-display font-extrabold text-lg sm:text-xl text-[#3D4852]">No urgent complaints! 🎉</h3>
+              <p className="text-xs sm:text-sm text-[#6B7280] max-w-md mx-auto">
+                All emergency items across Wing A-D are either verified resolved or with emergency services.
+                Great job keeping the community secure!
+              </p>
+              <button
+                onClick={() => setIsZeroUrgentMode(false)}
+                className="mt-2 text-[#6C63FF] hover:text-[#8B84FF] text-xs font-bold hover:underline inline-flex items-center gap-1 cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[16px]">undo</span> Restore Command Queue
+              </button>
+            </div>
+          )}
+
+          {/* Focused Priority Action Queue */}
+          <div className="space-y-3 sm:space-y-4">
+            {needsAttentionQueue.length === 0 ? (
+              <div className="neu-card p-6 sm:p-10 text-center">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl neu-inset-deep text-[#38B2AC] mx-auto flex items-center justify-center">
+                  <span className="material-symbols-outlined text-[24px] sm:text-[28px]">done_all</span>
                 </div>
-                <p className="text-sm text-[#6B7280]">
-                  What needs attention right now across Green Valley Society (Wing A, B, C &amp; D).
+                <p className="mt-3 font-display font-bold text-sm sm:text-base text-[#3D4852]">
+                  No urgent or high-priority complaints pending right now.
                 </p>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-4">
-                {/* AI Engine Status Pill */}
-                <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl neu-inset-sm">
-                  <span className="material-symbols-outlined text-[18px] text-[#6C63FF]">auto_awesome</span>
-                  <span className="text-xs font-bold text-[#3D4852]">AI Triage Engine: Online</span>
-                  <span className="inline-block w-2 h-2 rounded-full bg-[#38B2AC]"></span>
-                  <span className="text-xs text-[#6B7280]">
-                    {stats.triagedThisHour} triaged this hour
-                  </span>
-                </div>
-
-                {/* Refresh and View Register Buttons */}
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={fetchDashboardData}
-                    className="w-10 h-10 rounded-2xl neu-btn flex items-center justify-center text-[#3D4852] hover:text-[#6C63FF] transition-all cursor-pointer"
-                    title="Refresh command center"
-                    type="button"
-                  >
-                    <span className={`material-symbols-outlined text-[20px] ${loading ? 'animate-spin' : ''}`}>
-                      refresh
-                    </span>
-                  </button>
-
-                  <Link
-                    href="/complaints"
-                    className="px-4 py-2.5 rounded-2xl neu-btn text-xs font-bold text-[#6C63FF] hover:text-[#8B84FF] transition-all flex items-center gap-1.5"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">inbox</span>
-                    <span>View All Complaints ({activeCount})</span>
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Priority Summary Cards (Grid of 4) */}
-            <DashboardStats
-              urgent={urgentCount}
-              high={highCount}
-              medium={mediumCount}
-              low={lowCount}
-            />
-
-            {/* Triage Velocity & SLA Performance Banner */}
-            <div className="neu-card p-6 flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="flex items-center gap-4">
-                <div className="w-13 h-13 rounded-2xl neu-inset-deep text-[#6C63FF] flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-[26px]">smart_toy</span>
-                </div>
-                <div>
-                  <span className="text-base font-bold font-display text-[#3D4852]">
-                    Triage Velocity: {stats.velocityPercent}% classified under 45 seconds
-                  </span>
-                  <p className="text-xs text-[#6B7280] mt-0.5">
-                    Automatic vendor dispatch active for Otis Elevators, Mahavir Plumbing &amp; Security Desk
-                  </p>
-                </div>
-              </div>
-
-              {/* Miniature SLA sparkline */}
-              <div className="flex items-center gap-4 shrink-0">
-                <div className="text-right">
-                  <div className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wider">
-                    Avg SLA Response
-                  </div>
-                  <div className="text-lg font-extrabold text-[#3D4852] font-display tabular-nums">
-                    {stats.avgSlaResponse}
-                  </div>
-                </div>
-                <div className="p-2 rounded-2xl neu-inset-sm flex items-center justify-center">
-                  <svg className="w-24 h-7 text-[#6C63FF] overflow-visible" fill="none" viewBox="0 0 100 30">
-                    <path
-                      d="M 0,22 Q 20,28 35,15 T 70,12 T 100,5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeWidth="2.5"
-                    ></path>
-                    <circle className="fill-[#6C63FF]" cx="100" cy="5" r="3.5"></circle>
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            {/* Concise 'Needs Attention Right Now' Section */}
-            <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <h2 className="font-display font-extrabold text-2xl text-[#3D4852] tracking-tight">
-                    Needs Attention Right Now
-                  </h2>
-                  <span className="px-3 py-1 rounded-full neu-inset-sm text-xs font-bold text-[#C53030]">
-                    Top Priority
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  {/* Triage Mode Toggle */}
-                  <button
-                    onClick={() => setIsFastTriage(!isFastTriage)}
-                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-2xl transition-all text-xs font-bold cursor-pointer ${
-                      isFastTriage
-                        ? 'neu-btn-primary'
-                        : 'neu-btn text-[#6C63FF]'
-                    }`}
-                    type="button"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">
-                      {isFastTriage ? 'done_all' : 'bolt'}
-                    </span>
-                    <span>{isFastTriage ? 'Fast-Triage Active' : 'Triage Mode'}</span>
-                  </button>
-
-                  {/* Demo Zero Urgent Button */}
-                  <button
-                    onClick={() => setIsZeroUrgentMode(!isZeroUrgentMode)}
-                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
-                      isZeroUrgentMode
-                        ? 'neu-pressed text-[#38B2AC]'
-                        : 'neu-btn text-[#3D4852]'
-                    }`}
-                    title="Preview zero urgent state"
-                    type="button"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">celebration</span>
-                    <span>{isZeroUrgentMode ? 'Exit Zero Demo' : 'Demo Zero Urgent'}</span>
-                  </button>
-
-                  {/* View All Complaints link */}
-                  <Link
-                    href="/complaints"
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl neu-btn text-xs font-bold text-[#3D4852] hover:text-[#6C63FF] transition-all"
-                  >
-                    <span>Full Register</span>
-                    <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-                  </Link>
-                </div>
-              </div>
-
-              {/* Live Zero Urgent Banner (When triggered) */}
-              {isZeroUrgentMode && (
-                <div className="neu-card p-8 text-center space-y-3 animate-in fade-in">
-                  <div className="w-14 h-14 rounded-2xl neu-inset-deep text-[#38B2AC] mx-auto flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[32px]">verified</span>
-                  </div>
-                  <h3 className="font-display font-extrabold text-xl text-[#3D4852]">No urgent complaints! 🎉</h3>
-                  <p className="text-sm text-[#6B7280] max-w-md mx-auto">
-                    All emergency items across Wing A-D are either verified resolved or with emergency services.
-                    Great job keeping the community secure!
-                  </p>
-                  <button
-                    onClick={() => setIsZeroUrgentMode(false)}
-                    className="mt-2 text-[#6C63FF] hover:text-[#8B84FF] text-xs font-bold hover:underline inline-flex items-center gap-1 cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">undo</span> Restore Command Queue
-                  </button>
-                </div>
-              )}
-
-              {/* Focused Priority Action Queue */}
-              <div className="space-y-4">
-                {needsAttentionQueue.length === 0 ? (
-                  <div className="neu-card p-10 text-center">
-                    <div className="w-14 h-14 rounded-2xl neu-inset-deep text-[#38B2AC] mx-auto flex items-center justify-center">
-                      <span className="material-symbols-outlined text-[28px]">done_all</span>
-                    </div>
-                    <p className="mt-3 font-display font-bold text-base text-[#3D4852]">
-                      No urgent or high-priority complaints pending right now.
-                    </p>
-                    <p className="text-xs text-[#6B7280] mt-1">
-                      Check the full register for routine or in-progress tickets.
-                    </p>
-                    <Link
-                      href="/complaints"
-                      className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl neu-btn text-xs font-bold text-[#6C63FF]"
-                    >
-                      <span>Browse Full Register</span>
-                      <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-                    </Link>
-                  </div>
-                ) : (
-                  needsAttentionQueue.map((item) => (
-                    <ComplaintCard key={item.id} complaint={item} />
-                  ))
-                )}
-              </div>
-
-              {/* Bottom Jump-to-Register Banner */}
-              <div className="neu-card p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl neu-inset-deep text-[#6C63FF] flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-[20px]">inventory_2</span>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-[#3D4852]">Looking for other complaints?</h4>
-                    <p className="text-xs text-[#6B7280]">
-                      Search and manage all {activeCount} active and {stats.resolvedToday} resolved complaints with category, status, and wing filters.
-                    </p>
-                  </div>
-                </div>
-
+                <p className="text-xs text-[#6B7280] mt-1">
+                  Check the full register for routine or in-progress tickets.
+                </p>
                 <Link
                   href="/complaints"
-                  className="px-5 py-2.5 rounded-2xl neu-btn text-xs font-bold text-[#6C63FF] hover:text-[#8B84FF] transition-all flex items-center gap-1.5 shrink-0"
+                  className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl neu-btn text-xs font-bold text-[#6C63FF] min-h-[44px]"
                 >
-                  <span>Open Complaints Register</span>
+                  <span>Browse Full Register</span>
                   <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
                 </Link>
               </div>
+            ) : (
+              needsAttentionQueue.map((item) => (
+                <ComplaintCard key={item.id} complaint={item} />
+              ))
+            )}
+          </div>
+
+          {/* Bottom Jump-to-Register Banner */}
+          <div className="neu-card p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-xl neu-inset-deep text-[#6C63FF] flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-[20px]">inventory_2</span>
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-xs sm:text-sm font-bold text-[#3D4852]">Looking for other complaints?</h4>
+                <p className="text-[11px] sm:text-xs text-[#6B7280] truncate sm:whitespace-normal">
+                  Search and manage all {activeCount} active and {stats.resolvedToday} resolved complaints with category, status, and wing filters.
+                </p>
+              </div>
             </div>
 
-            {/* Estate Summary Bottom Strip */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-              <div className="neu-card p-5 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl neu-inset-deep text-[#6C63FF] flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-[22px]">contacts</span>
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-[#3D4852]">Emergency Vendor Contacts</div>
-                  <div className="text-xs text-[#6B7280] mt-0.5">
-                    Otis 24x7: 1800-103-6847 • Plumber: #208
-                  </div>
-                </div>
-              </div>
+            <Link
+              href="/complaints"
+              className="w-full sm:w-auto px-4 sm:px-5 py-2.5 rounded-2xl neu-btn text-xs font-bold text-[#6C63FF] hover:text-[#8B84FF] transition-all flex items-center justify-center gap-1.5 shrink-0 min-h-[44px]"
+            >
+              <span>Open Complaints Register</span>
+              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </Link>
+          </div>
+        </div>
 
-              <div
-                onClick={handleBroadcast}
-                className="neu-card p-5 flex items-center gap-4 hover:translate-y-[-2px] transition-transform cursor-pointer"
-              >
-                <div className="w-12 h-12 rounded-2xl neu-inset-deep text-[#38B2AC] flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-[22px]">forum</span>
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-[#3D4852] flex items-center gap-1.5">
-                    <span>Broadcast WhatsApp Alert</span>
-                    <span className="material-symbols-outlined text-[14px] text-[#38B2AC]">send</span>
-                  </div>
-                  <div className="text-xs text-[#6B7280] mt-0.5">
-                    Push notice to Wing A regarding pump repair
-                  </div>
-                </div>
-              </div>
-
-              <div className="neu-card p-5 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl neu-inset-deep text-[#6B7280] flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-[22px]">history</span>
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-[#3D4852]">Audit Trail Logged</div>
-                  <div className="text-xs text-[#6B7280] mt-0.5">
-                    Committee actions recorded with timestamp
-                  </div>
-                </div>
+        {/* Estate Summary Bottom Strip */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 pt-2">
+          <div className="neu-card p-4 sm:p-5 flex items-center gap-3 sm:gap-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl neu-inset-deep text-[#6C63FF] flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined text-[20px] sm:text-[22px]">contacts</span>
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs font-bold text-[#3D4852]">Emergency Vendor Contacts</div>
+              <div className="text-[11px] sm:text-xs text-[#6B7280] mt-0.5 truncate">
+                Otis 24x7: 1800-103-6847 • Plumber: #208
               </div>
             </div>
           </div>
-        </main>
-      </div>
-    </div>
+
+          <div
+            onClick={handleBroadcast}
+            className="neu-card p-4 sm:p-5 flex items-center gap-3 sm:gap-4 hover:translate-y-[-2px] transition-transform cursor-pointer"
+          >
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl neu-inset-deep text-[#38B2AC] flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined text-[20px] sm:text-[22px]">forum</span>
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs font-bold text-[#3D4852] flex items-center gap-1.5">
+                <span>Broadcast WhatsApp Alert</span>
+                <span className="material-symbols-outlined text-[14px] text-[#38B2AC]">send</span>
+              </div>
+              <div className="text-[11px] sm:text-xs text-[#6B7280] mt-0.5 truncate">
+                Push notice to Wing A regarding pump repair
+              </div>
+            </div>
+          </div>
+
+          <div className="neu-card p-4 sm:p-5 flex items-center gap-3 sm:gap-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl neu-inset-deep text-[#6B7280] flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined text-[20px] sm:text-[22px]">history</span>
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs font-bold text-[#3D4852]">Audit Trail Logged</div>
+              <div className="text-[11px] sm:text-xs text-[#6B7280] mt-0.5 truncate">
+                Committee actions recorded with timestamp
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </AppShell>
   );
 }

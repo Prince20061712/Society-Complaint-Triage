@@ -14,6 +14,10 @@
   --font-body: 'DM Sans', sans-serif;
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -21,6 +25,9 @@ html, body {
   color: #3D4852;
   font-family: 'DM Sans', sans-serif;
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
 }
 
 body {
@@ -137,6 +144,7 @@ body {
   box-shadow: inset 6px 6px 10px rgb(163, 177, 198, 0.6), inset -6px -6px 10px rgba(255, 255, 255, 0.5);
   transition: all 300ms ease-out;
   outline: none;
+  max-width: 100%;
 }
 
 .neu-input:focus {

@@ -20,7 +20,7 @@ export const Header: React.FC = () => {
   }, []);
 
   return (
-    <header className="fixed top-0 left-64 right-0 h-18 bg-[#E0E5EC] z-40 px-8 flex items-center justify-between [box-shadow:0_6px_16px_rgb(163,177,198,0.35)]">
+    <header className="fixed top-0 left-0 lg:left-64 right-0 h-18 bg-[#E0E5EC] z-40 px-4 sm:px-8 flex items-center justify-between [box-shadow:0_6px_16px_rgb(163,177,198,0.35)]">
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl neu-inset-deep flex items-center justify-center text-[#6C63FF]">

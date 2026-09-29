@@ -11,7 +11,7 @@ export const DuplicateAlert: React.FC<DuplicateAlertProps> = ({ ticketNumber, re
   if (!ticketNumber) return null;
 
   return (
-    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full neu-inset-sm text-[#3D4852] text-xs">
+    <div className="inline-flex flex-wrap items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-2xl sm:rounded-full neu-inset-sm text-[#3D4852] text-xs max-w-full break-words">
       <span className="material-symbols-outlined text-[16px] text-[#6C63FF]">content_copy</span>
       <span>
         Possible duplicate of <strong className="text-[#3D4852]">#{ticketNumber}</strong>
