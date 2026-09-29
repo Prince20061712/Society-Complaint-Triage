@@ -1,367 +1,91 @@
 # Society Complaint Triage
 
-> Built for **Vibe Coding Event 2026 — Day 1 (29th)**
-> **Problem Statement #2:** Society Complaint Triage
+> Built for **Vibe Coding Event 2026 — Day 1 (29th)**  
+> **Problem Statement #2:** Society Complaint Triage  
 > **Target Persona:** Housing Society Committee Volunteers (~100 flats)
 
 ## Problem & Solution
 
-Housing society committees receive complaints through chat messages in mixed English, Hindi, and Hinglish. Complaints about lifts, water, parking, cleaning, noise, and other issues can pile up, making urgent problems difficult to identify and track.
+How might we take messy resident complaints and use AI to sort, prioritise, and track them until they are resolved?
 
-**Society Complaint Triage** converts messy resident complaints into structured, prioritized tickets using AI.
+In a typical 100-flat housing society, resident complaints arrive through noisy WhatsApp chats, calls, and informal messages in mixed English, Hindi, and Hinglish. Critical emergencies (such as senior citizens trapped in lifts, electrical sparking, or water tank overflows) get buried under routine parking or noise complaints. Committee volunteers—who have only a few minutes a day—are overwhelmed trying to decipher, organize, and follow up on issues.
 
-The system:
+**Society Complaint Triage** automates the entire intake, comprehension, prioritization, duplicate clustering, and resolution lifecycle into a streamlined volunteer dashboard and resident portal.
 
-1. Accepts complaints in English, Hindi, or Hinglish.
-2. Uses AI to understand and summarize the complaint.
-3. Categorizes the complaint.
-4. Assigns a priority based on the reported severity.
-5. Detects possible duplicate complaints.
-6. Presents the committee with a prioritized action queue.
-7. Tracks complaints from open to resolved.
+### Constraint Addressed
 
-### Core Value
+There are around 100 flats, complaints come in mixed English and Hindi, and committee members can spare only a few minutes a day.
 
-> **Instead of reading every complaint, committee members can focus on what needs attention first.**
+* **Multilingual Understanding:** Understands raw colloquial English, Hindi, and Hinglish complaints directly without requiring residents to structure their thoughts.
+* **Triage in Under 60 Seconds:** Automatically assigns severity priorities (`URGENT`, `HIGH`, `MEDIUM`, `LOW`) and routes emergency issues to pre-assigned vendor hotlines.
+* **Duplicate Detection:** Prevents repeated complaints about the same breakdown (e.g., multiple flats reporting "Lift 1 not working") from cluttering the committee queue.
+* **Zero Overhead for Volunteers:** Committee members can review the urgent queue, verify AI decisions with human-in-the-loop overrides, and update resolution statuses in seconds.
 
-## Constraint Addressed
-
-The solution is designed for a society of approximately 100 flats where:
-
-* Complaints arrive in mixed English, Hindi, and Hinglish.
-* Multiple residents may report the same issue.
-* Committee members have only a few minutes per day.
-* Urgent issues should not get buried under routine complaints.
-
-## MVP Features
-
-### Resident
-
-* Submit a complaint
-* Enter name and flat number
-* Write the complaint naturally in English, Hindi, or Hinglish
-* Receive a complaint ticket after submission
-
-### AI Triage
-
-The AI extracts:
-
-* Language
-* Complaint title
-* Summary
-* Category
-* Priority
-* Confidence
-
-Supported categories:
-
-* Water
-* Lift
-* Electricity
-* Parking
-* Cleaning
-* Noise
-* Security
-* Other
-
-Supported priorities:
-
-* Urgent
-* High
-* Medium
-* Low
-
-### Committee
-
-The committee dashboard provides:
-
-* Priority-based complaint queue
-* Complaint details
-* AI-generated summary
-* Category and priority
-* Possible duplicate detection
-* Status tracking
-* Resolution notes
-
-Complaint lifecycle:
-
-```text
-OPEN → IN_PROGRESS → RESOLVED → CLOSED
-```
+---
 
 ## Core AI Architecture
 
-### Model / Service
+- **Model / Service:**
+  - **Primary Engine:** Groq Cloud LLM (`openai/gpt-oss-20b` / `llama-3.3-70b-versatile`) utilizing strict server-side JSON schema generation for deterministic structured output.
+  - **Local Heuristic Rule Engine (Zero-Downtime Fallback):** Built-in multilingual keyword and regex classifier that operates instantly if cloud APIs experience rate limits, network outages, or key misconfigurations.
 
-The application uses an LLM API for complaint understanding and structured triage.
+- **Workflow:**
+  1. **Intake & Normalization:** Resident submits an unstructured complaint via the Resident Portal in natural English, Hindi, or Hinglish.
+  2. **Multilingual Processing:** The server-side AI pipeline identifies the source language, produces an executive English title, generates a concise one-sentence summary, and classifies the category (`WATER`, `LIFT`, `ELECTRICITY`, `PARKING`, `CLEANING`, `SECURITY`, `NOISE`, `MAINTENANCE`).
+  3. **Priority & Life-Safety Scoring:** Evaluates life-safety risks, structural damage potential, and active disruptions to score severity (`URGENT`, `HIGH`, `MEDIUM`, `LOW`) accompanied by transparent AI reasoning.
+  4. **Emergency Vendor Routing:** Pre-assigns verified vendor contacts (e.g., Otis Elevators, society electrician, emergency plumber) for critical tickets.
+  5. **Duplicate Clustering:** Compares incoming complaints against active tickets using category matching, flat/wing proximity, and semantic similarity to flag duplicates before action is taken.
+  6. **Durable Persistence:** Persists tickets into Neon Serverless PostgreSQL with full audit notes.
+  7. **Volunteer Action:** Committee reviews prioritized cards on the Neumorphic Dashboard, executes human-in-the-loop priority overrides, appends notes, and tracks status (`OPEN` → `IN_PROGRESS` → `RESOLVED`).
 
-The AI is instructed to return structured JSON containing the complaint category, priority, normalized summary, detected language, and confidence.
+- **Error Handling:**
+  - **Graceful Fallback:** If the external LLM call fails or times out, the system automatically falls back to the deterministic local rule engine without crashing or interrupting the user.
+  - **Unclear or Ambiguous Inputs:** Unclear reports are tagged with lower confidence scores, assigned a `LOW` or `MEDIUM` triage baseline, and flagged with an advisory reasoning note directing committee members to seek clarification.
+  - **Input Validation:** Strict server-side schema validation guards against empty text, malformed payloads, or cross-tenant injection attempts.
 
-### Workflow
-
-```text
-Resident complaint
-        ↓
-Input validation
-        ↓
-AI language understanding
-        ↓
-Normalization + summary
-        ↓
-Category classification
-        ↓
-Priority classification
-        ↓
-Duplicate comparison
-        ↓
-Database ticket
-        ↓
-Committee dashboard
-        ↓
-Status tracking
-```
-
-### Duplicate Detection
-
-New complaints are compared against unresolved complaints.
-
-The AI identifies whether another unresolved complaint appears to describe the same issue.
-
-Duplicates are **suggested**, not automatically merged, allowing the committee to make the final decision.
-
-### Error Handling
-
-If the AI service is unavailable:
-
-* The complaint is still stored.
-* The complaint is marked for manual review.
-* Default classification values are used.
-
-If the AI returns invalid structured data:
-
-1. Validate the response.
-2. Retry once.
-3. Fall back to manual review if necessary.
-
-If a complaint is unclear, the system does not invent information. It assigns `OTHER`, uses a moderate default priority, and flags the complaint for committee review.
-
-## Architecture
-
-```text
-                 Resident
-                    │
-                    ▼
-             Next.js Frontend
-                    │
-                    ▼
-             Next.js API Routes
-                    │
-          ┌─────────┴─────────┐
-          ▼                   ▼
-       AI Service          PostgreSQL
-          │                   │
-          └─────────┬─────────┘
-                    ▼
-          Committee Dashboard
-```
-
-## Technology Stack
-
-* Next.js
-* TypeScript
-* Tailwind CSS
-* PostgreSQL
-* AI/LLM API
-* Prisma ORM
-
-## Project Structure
-
-```text
-society-complaint-triage/
-│
-├── app/
-│   ├── page.tsx
-│   ├── dashboard/
-│   │   └── page.tsx
-│   ├── complaints/
-│   │   └── [id]/
-│   │       └── page.tsx
-│   └── api/
-│       ├── complaints/
-│       │   ├── route.ts
-│       │   └── [id]/
-│       │       └── route.ts
-│       └── dashboard/
-│           └── route.ts
-│
-├── components/
-│   ├── ComplaintForm.tsx
-│   ├── ComplaintCard.tsx
-│   ├── PriorityBadge.tsx
-│   ├── StatusBadge.tsx
-│   ├── DashboardStats.tsx
-│   └── DuplicateAlert.tsx
-│
-├── lib/
-│   ├── db.ts
-│   ├── ai.ts
-│   ├── triage.ts
-│   ├── duplicate.ts
-│   └── validation.ts
-│
-├── prisma/
-│   └── schema.prisma
-│
-├── types/
-│   └── complaint.ts
-│
-├── public/
-├── .env.example
-├── package.json
-└── README.md
-```
+---
 
 ## Prerequisites & Installation
 
 ```bash
 # 1. Clone repository
-git clone <REPO_URL>
+git clone https://github.com/Prince20061712/Society-Complaint-Triage.git
+cd Society-Complaint-Triage
 
-# 2. Enter directory
-cd society-complaint-triage
-
-# 3. Install dependencies
+# 2. Install dependencies
 npm install
 
-# 4. Create environment file
+# 3. Environment variables
+# Copy template and add your credentials to .env.local:
 cp .env.example .env.local
-```
 
-Add the required environment variables:
+# Required keys in .env.local:
+# GROQ_API_KEY=your_groq_api_key_here
+# DATABASE_URL=your_postgresql_connection_string
 
-```env
-DATABASE_URL=your_postgresql_connection_string
-AI_API_KEY=your_ai_api_key
-```
-
-Initialize the database:
-
-```bash
-npx prisma generate
-npx prisma migrate dev
-```
-
-Run the development server:
-
-```bash
+# 4. Run development server
 npm run dev
 ```
 
-Open:
+Open [http://localhost:3000](http://localhost:3000) (or `http://localhost:3001`) in your browser.
 
-```text
-http://localhost:3000
-```
+---
 
-## API
+## Demo Credentials (Competition Evaluation)
 
-### Create Complaint
+The application includes a role-based login screen with one-touch demo credential buttons:
 
-```http
-POST /api/complaints
-```
-
-```json
-{
-  "residentName": "Rahul Sharma",
-  "flatNumber": "A-203",
-  "message": "2nd floor ki lift kal se band hai"
-}
-```
-
-### Get Complaints
-
-```http
-GET /api/complaints
-```
-
-Optional filters:
-
-```text
-?status=OPEN
-?priority=URGENT
-?category=LIFT
-```
-
-### Update Complaint
-
-```http
-PATCH /api/complaints/:id
-```
-
-```json
-{
-  "status": "IN_PROGRESS",
-  "note": "Technician contacted"
-}
-```
-
-### Dashboard
-
-```http
-GET /api/dashboard
-```
-
-## Demo Scenario
-
-Example resident complaint:
-
-```text
-"bhai 2nd floor ki lift mein uncle phas gaye hain"
-```
-
-AI output:
-
-```json
-{
-  "category": "LIFT",
-  "priority": "URGENT",
-  "title": "Person trapped in second-floor lift",
-  "summary": "A resident reports that an elderly person is trapped in the second-floor lift.",
-  "language": "HINGLISH"
-}
-```
-
-The committee immediately sees the complaint at the top of the urgent queue.
-
-## Demo Credentials (Competition)
-
-The application features a secure, role-based login system for judges and demonstrators:
-
-| Role | Username / Email | Password | Destination |
+| Role | Demo Username / Email | Demo Password | Starting Destination |
 |---|---|---|---|
 | **Resident** | `resident@greenvalley.demo` | `Resident@123` | Resident Portal (`/`) |
 | **Committee** | `committee@greenvalley.demo` | `Committee@123` | Committee Dashboard (`/dashboard`) |
 
-- **One-touch autofill:** Click `[ Resident ]` or `[ Committee ]` cards on `/login` to populate credentials.
-- **Serverless Authentication:** Uses HTTP-only cookie sessions signed via Web Crypto HMAC-SHA256.
+> *Clicking `[ Resident ]` or `[ Committee ]` on the login page autofills the demo credentials. Press **"Sign In"** to authenticate via secure HTTP-only cookie sessions.*
 
-## Database & Architecture
-
-- **Database:** Neon Serverless PostgreSQL (`@neondatabase/serverless`)
-- **Connection Variable:** `DATABASE_URL` / `POSTGRES_URL`
-- **Fallback:** In-memory store automatically active if no database is connected.
-
-## Design Principle
-
-The product is intentionally focused on one workflow:
-
-> **Capture → Understand → Prioritize → Detect Duplicates → Track → Resolve**
-
-No unnecessary features are required for the MVP.
+---
 
 ## Participant Info
 
-* **Name:** Prince Gupta
-* **College ID:** [Your ID]
-* **Day:** Day 1 (29th)
+- **Name:** Prince Gupta
+- **College ID:** [Your ID]
+- **Day:** Day 1 (29th)
