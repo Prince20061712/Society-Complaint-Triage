@@ -51,7 +51,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeCount = 26 }) => {
           </Link>
 
           <Link
-            href="/dashboard"
+            href="/complaints"
             className={`flex items-center justify-between px-4 py-3 rounded-2xl transition-all duration-300 font-medium text-sm ${
               isComplaints
                 ? 'neu-pressed text-[#6C63FF] font-bold'
@@ -86,7 +86,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeCount = 26 }) => {
         {/* Society details card */}
         <div className="neu-inset-sm rounded-2xl p-4 flex flex-col gap-1">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#3D4852]">Green Valley Society</span>
+            <span className="text-xs font-bold text-[#3D4852]">Green Valley Society / Committee</span>
             <span className="w-2 h-2 rounded-full bg-[#38B2AC]"></span>
           </div>
           <span className="text-xs text-[#6B7280]">Wing A-D • 120 Flats</span>

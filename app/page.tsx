@@ -90,10 +90,10 @@ export default function ResidentPortalPage() {
               </h3>
             </div>
             <Link
-              href="/dashboard"
+              href="/complaints"
               className="text-[#6C63FF] hover:text-[#8B84FF] text-xs font-bold flex items-center gap-1 transition-colors"
             >
-              <span>View all on Dashboard</span>
+              <span>View all on Complaints Register</span>
               <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
             </Link>
           </div>
