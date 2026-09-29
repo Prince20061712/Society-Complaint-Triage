@@ -45,8 +45,8 @@ export const Header: React.FC = () => {
     <header className="fixed top-0 left-0 lg:left-64 right-0 h-18 bg-[#E0E5EC] z-40 px-4 sm:px-8 flex items-center justify-between [box-shadow:0_6px_16px_rgb(163,177,198,0.35)]">
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl neu-inset-deep flex items-center justify-center text-[#6C63FF]">
-            <span className="material-symbols-outlined text-[20px]">domain</span>
+          <div className="w-8 h-8 rounded-xl neu-inset-deep flex items-center justify-center p-1 shrink-0">
+            <img src="/logo.png" alt="Society Triage Logo" className="w-full h-full object-contain" />
           </div>
           <span className="font-display font-bold text-sm text-[#3D4852] tracking-tight">
             Green Valley RWA

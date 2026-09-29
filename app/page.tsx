@@ -36,8 +36,8 @@ export default function ResidentPortalPage() {
       {/* Top Soft Header */}
       <header className="h-16 sm:h-18 bg-[#E0E5EC] px-4 sm:px-8 flex items-center justify-between sticky top-0 z-40 [box-shadow:0_6px_16px_rgb(163,177,198,0.35)] w-full">
         <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl neu-inset-deep flex items-center justify-center text-[#6C63FF] shrink-0">
-            <span className="material-symbols-outlined text-[22px] sm:text-[24px]">apartment</span>
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl neu-inset-deep flex items-center justify-center p-1.5 shrink-0">
+            <img src="/logo.png" alt="Society Triage Logo" className="w-full h-full object-contain" />
           </div>
           <div className="min-w-0">
             <span className="font-display font-extrabold text-sm sm:text-base text-[#3D4852] tracking-tight truncate block">

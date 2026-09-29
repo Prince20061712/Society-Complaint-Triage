@@ -77,8 +77,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children, activeCount = 0 })
         <div className="flex flex-col gap-6">
           {/* Brand */}
           <Link href="/dashboard" className="flex items-center gap-3.5 group">
-            <div className="w-11 h-11 rounded-2xl neu-inset-deep flex items-center justify-center text-[#6C63FF] shrink-0 group-hover:scale-105 transition-transform duration-300">
-              <span className="material-symbols-outlined text-[24px]">apartment</span>
+            <div className="w-11 h-11 rounded-2xl neu-inset-deep flex items-center justify-center p-2 shrink-0 group-hover:scale-105 transition-transform duration-300">
+              <img src="/logo.png" alt="Society Triage Logo" className="w-full h-full object-contain" />
             </div>
             <div className="flex flex-col">
               <span className="font-display font-extrabold text-lg text-[#3D4852] leading-tight tracking-tight group-hover:text-[#6C63FF] transition-colors">
@@ -177,8 +177,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children, activeCount = 0 })
               {/* Drawer Top Header with Close */}
               <div className="flex items-center justify-between">
                 <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl neu-inset-deep flex items-center justify-center text-[#6C63FF] shrink-0">
-                    <span className="material-symbols-outlined text-[22px]">apartment</span>
+                  <div className="w-10 h-10 rounded-2xl neu-inset-deep flex items-center justify-center p-1.5 shrink-0">
+                    <img src="/logo.png" alt="Society Triage Logo" className="w-full h-full object-contain" />
                   </div>
                   <div>
                     <span className="font-display font-extrabold text-base text-[#3D4852] leading-tight block">
@@ -284,8 +284,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children, activeCount = 0 })
           </button>
 
           <div className="flex items-center gap-2 min-w-0">
-            <div className="w-8 h-8 rounded-xl neu-inset-deep flex items-center justify-center text-[#6C63FF] shrink-0">
-              <span className="material-symbols-outlined text-[18px]">domain</span>
+            <div className="w-8 h-8 rounded-xl neu-inset-deep flex items-center justify-center p-1.5 shrink-0">
+              <img src="/logo.png" alt="Society Triage Logo" className="w-full h-full object-contain" />
             </div>
             <span className="font-display font-bold text-xs sm:text-sm text-[#3D4852] tracking-tight truncate">
               Green Valley RWA
