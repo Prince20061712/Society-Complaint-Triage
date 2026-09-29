@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllComplaints, saveComplaint } from '@/lib/db';
+import { getAllComplaints, resetDatabaseToDemoData, saveComplaint } from '@/lib/db';
 import { processComplaintTriage } from '@/lib/triage';
 import { validateComplaintInput } from '@/lib/validation';
 
@@ -45,6 +45,20 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
+export async function DELETE() {
+  try {
+    const resetList = resetDatabaseToDemoData();
+    return NextResponse.json({
+      success: true,
+      message: 'Complaints database reset to curated demo dataset',
+      count: resetList.length,
+      complaints: resetList,
+    });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }

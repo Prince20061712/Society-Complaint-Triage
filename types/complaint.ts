@@ -74,8 +74,7 @@ export interface DashboardStatsData {
   high: number;
   medium: number;
   low: number;
-  resolvedToday: number;
-  avgSlaResponse: string;
-  triagedThisHour: number;
-  velocityPercent: number;
+  open: number;
+  inProgress: number;
+  resolved: number;
 }

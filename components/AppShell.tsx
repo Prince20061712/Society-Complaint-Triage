@@ -9,7 +9,7 @@ interface AppShellProps {
   activeCount?: number;
 }
 
-export const AppShell: React.FC<AppShellProps> = ({ children, activeCount = 26 }) => {
+export const AppShell: React.FC<AppShellProps> = ({ children, activeCount = 0 }) => {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState('Tuesday, 24 Oct');

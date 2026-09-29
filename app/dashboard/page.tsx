@@ -10,15 +10,14 @@ import { Complaint, DashboardStatsData } from '@/types/complaint';
 export default function DashboardCommandCenterPage() {
   const [complaints, setComplaints] = useState<Complaint[]>([]);
   const [stats, setStats] = useState<DashboardStatsData>({
-    totalActive: 26,
-    urgent: 2,
-    high: 5,
-    medium: 11,
-    low: 8,
-    resolvedToday: 42,
-    avgSlaResponse: '18m 40s',
-    triagedThisHour: 4,
-    velocityPercent: 94,
+    totalActive: 0,
+    urgent: 0,
+    high: 0,
+    medium: 0,
+    low: 0,
+    open: 0,
+    inProgress: 0,
+    resolved: 0,
   });
 
   const [loading, setLoading] = useState(true);
@@ -96,6 +95,7 @@ export default function DashboardCommandCenterPage() {
   const highCount = complaints.filter((c) => c.priority === 'HIGH' && (c.status === 'OPEN' || c.status === 'IN_PROGRESS')).length;
   const mediumCount = complaints.filter((c) => c.priority === 'MEDIUM' && (c.status === 'OPEN' || c.status === 'IN_PROGRESS')).length;
   const lowCount = complaints.filter((c) => c.priority === 'LOW' && (c.status === 'OPEN' || c.status === 'IN_PROGRESS')).length;
+  const resolvedCount = complaints.filter((c) => c.status === 'RESOLVED').length;
 
   const handleBroadcast = () => {
     setAlertNotice('Demo Simulation: WhatsApp alert broadcast queued to Wing A residents regarding water pump repair.');
@@ -290,7 +290,7 @@ export default function DashboardCommandCenterPage() {
               <div className="min-w-0">
                 <h4 className="text-xs sm:text-sm font-bold text-[#3D4852]">Looking for other complaints?</h4>
                 <p className="text-[11px] sm:text-xs text-[#6B7280] truncate sm:whitespace-normal">
-                  Search and manage all {activeCount} active and {stats.resolvedToday} resolved complaints with category, status, and wing filters.
+                  Search and manage all {activeCount} active and {resolvedCount} resolved complaints with category, status, and wing filters.
                 </p>
               </div>
             </div>
