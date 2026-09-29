@@ -1,75 +1,26 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-fixed: #dbe1ff;
-  --color-on-secondary-fixed-variant: #3323cc;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-highest: #d3e4fe;
-  --color-error-container: #ffdad6;
-  --color-secondary: #4b41e1;
-  --color-background: #f8f9ff;
-  --color-on-error: #ffffff;
-  --color-secondary-fixed: #e2dfff;
-  --color-tertiary-container: #656d84;
-  --color-surface-bright: #f8f9ff;
-  --color-secondary-container: #645efb;
-  --color-on-primary-fixed: #00174b;
-  --color-on-secondary-fixed: #0f0069;
-  --color-tertiary-fixed: #dae2fd;
-  --color-outline-variant: #c3c6d7;
-  --color-surface-tint: #0053db;
-  --color-surface-container: #e5eeff;
-  --color-on-background: #0b1c30;
-  --color-inverse-on-surface: #eaf1ff;
-  --color-primary-container: #2563eb;
-  --color-surface-container-high: #dce9ff;
-  --color-on-secondary-container: #fffbff;
-  --color-error: #ba1a1a;
-  --color-primary: #004ac6;
-  --color-outline: #737686;
-  --color-tertiary: #4d556b;
-  --color-inverse-primary: #b4c5ff;
-  --color-surface: #f8f9ff;
-  --color-on-tertiary-container: #eef0ff;
-  --color-surface-dim: #cbdbf5;
-  --color-inverse-surface: #213145;
-  --color-on-primary: #ffffff;
-  --color-on-surface-variant: #434655;
-  --color-secondary-fixed-dim: #c3c0ff;
-  --color-surface-variant: #d3e4fe;
-  --color-on-surface: #0b1c30;
-  --color-on-tertiary-fixed: #131b2e;
-  --color-on-secondary: #ffffff;
-  --color-surface-container-low: #eff4ff;
-  --color-on-tertiary: #ffffff;
-  --color-tertiary-fixed-dim: #bec6e0;
-  --color-on-primary-fixed-variant: #003ea8;
-  --color-on-primary-container: #eeefff;
-  --color-on-error-container: #93000a;
-  --color-on-tertiary-fixed-variant: #3f465c;
-  --color-primary-fixed-dim: #b4c5ff;
+  --color-neu-bg: #E0E5EC;
+  --color-neu-fg: #3D4852;
+  --color-neu-muted: #6B7280;
+  --color-neu-accent: #6C63FF;
+  --color-neu-accent-light: #8B84FF;
+  --color-neu-accent-secondary: #38B2AC;
+  --color-neu-danger: #E53E3E;
+  --color-neu-warning: #DD6B20;
 
-  --spacing-space-xs: 0.25rem;
-  --spacing-space-sm: 0.5rem;
-  --spacing-space-md: 0.75rem;
-  --spacing-space-lg: 1rem;
-  --spacing-space-xl: 1.5rem;
-  --spacing-space-2xl: 2rem;
-  --spacing-gutter: 1.25rem;
-  --spacing-gutter-lg: 1.5rem;
-  --spacing-margin: 1rem;
-  --spacing-margin-md: 1.5rem;
-  --spacing-margin-lg: 2rem;
-
-  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
 }
 
 html, body {
   margin: 0;
   padding: 0;
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--color-background);
-  color: var(--color-on-surface);
+  background-color: #E0E5EC;
+  color: #3D4852;
+  font-family: 'DM Sans', sans-serif;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -97,69 +48,111 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Typography tokens matching design */
-.font-headline-xl {
-  font-size: 2.25rem;
-  line-height: 2.75rem;
-  letter-spacing: -0.025em;
-  font-weight: 700;
+/* Neumorphic Dual Opposing Shadow Utilities (Pure Soft UI) */
+.neu-flat {
+  background-color: #E0E5EC;
+  box-shadow: 9px 9px 16px rgb(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
 }
 
-.font-headline-lg {
-  font-size: 1.75rem;
-  line-height: 2.25rem;
-  letter-spacing: -0.02em;
-  font-weight: 600;
+.neu-flat-hover {
+  box-shadow: 12px 12px 20px rgb(163, 177, 198, 0.7), -12px -12px 20px rgba(255, 255, 255, 0.6);
 }
 
-.font-headline-md {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-  letter-spacing: -0.015em;
-  font-weight: 600;
+.neu-flat-sm {
+  background-color: #E0E5EC;
+  box-shadow: 5px 5px 10px rgb(163, 177, 198, 0.6), -5px -5px 10px rgba(255, 255, 255, 0.5);
 }
 
-.font-headline-sm {
-  font-size: 1.125rem;
-  line-height: 1.5rem;
-  letter-spacing: -0.01em;
-  font-weight: 600;
+.neu-pressed {
+  background-color: #E0E5EC;
+  box-shadow: inset 6px 6px 10px rgb(163, 177, 198, 0.6), inset -6px -6px 10px rgba(255, 255, 255, 0.5);
 }
 
-.font-body-lg {
-  font-size: 1rem;
-  line-height: 1.5rem;
-  font-weight: 400;
+.neu-inset-deep {
+  background-color: #E0E5EC;
+  box-shadow: inset 10px 10px 20px rgb(163, 177, 198, 0.7), inset -10px -10px 20px rgba(255, 255, 255, 0.6);
 }
 
-.font-body-md {
-  font-size: 0.875rem;
-  line-height: 1.375rem;
-  font-weight: 400;
+.neu-inset-sm {
+  background-color: #E0E5EC;
+  box-shadow: inset 3px 3px 6px rgb(163, 177, 198, 0.6), inset -3px -3px 6px rgba(255, 255, 255, 0.5);
 }
 
-.font-body-sm {
-  font-size: 0.8125rem;
-  line-height: 1.25rem;
-  font-weight: 400;
+/* Neumorphic Card */
+.neu-card {
+  background-color: #E0E5EC;
+  border-radius: 32px;
+  box-shadow: 9px 9px 16px rgb(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
+  transition: all 300ms ease-out;
 }
 
-.font-label-lg {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  font-weight: 600;
+.neu-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 12px 12px 20px rgb(163, 177, 198, 0.7), -12px -12px 20px rgba(255, 255, 255, 0.6);
 }
 
-.font-label-md {
-  font-size: 0.75rem;
-  line-height: 1rem;
-  letter-spacing: 0.02em;
-  font-weight: 600;
+/* Neumorphic Interactive Buttons */
+.neu-btn {
+  background-color: #E0E5EC;
+  color: #3D4852;
+  border-radius: 16px;
+  box-shadow: 9px 9px 16px rgb(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
+  transition: all 300ms ease-out;
 }
 
-.font-label-sm {
-  font-size: 0.6875rem;
-  line-height: 0.875rem;
-  letter-spacing: 0.04em;
-  font-weight: 700;
+.neu-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 12px 12px 20px rgb(163, 177, 198, 0.7), -12px -12px 20px rgba(255, 255, 255, 0.6);
+}
+
+.neu-btn:active {
+  transform: translateY(0.5px);
+  box-shadow: inset 6px 6px 10px rgb(163, 177, 198, 0.6), inset -6px -6px 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Primary Accent Button */
+.neu-btn-primary {
+  background: linear-gradient(135deg, #6C63FF, #8B84FF);
+  color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 8px 8px 16px rgba(108, 99, 255, 0.35), -8px -8px 16px rgba(255, 255, 255, 0.5);
+  transition: all 300ms ease-out;
+}
+
+.neu-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 10px 10px 20px rgba(108, 99, 255, 0.45), -10px -10px 20px rgba(255, 255, 255, 0.6);
+}
+
+.neu-btn-primary:active {
+  transform: translateY(0.5px);
+  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.25), inset -4px -4px 8px rgba(255, 255, 255, 0.2);
+}
+
+/* Neumorphic Input & Textarea */
+.neu-input {
+  background-color: #E0E5EC;
+  color: #3D4852;
+  border-radius: 16px;
+  box-shadow: inset 6px 6px 10px rgb(163, 177, 198, 0.6), inset -6px -6px 10px rgba(255, 255, 255, 0.5);
+  transition: all 300ms ease-out;
+  outline: none;
+}
+
+.neu-input:focus {
+  box-shadow: inset 10px 10px 20px rgb(163, 177, 198, 0.7), inset -10px -10px 20px rgba(255, 255, 255, 0.6);
+}
+
+/* Subtle Floating Animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }

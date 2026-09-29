@@ -7,37 +7,34 @@ interface PriorityBadgeProps {
 }
 
 export const PriorityBadge: React.FC<PriorityBadgeProps> = ({ priority, size = 'sm' }) => {
+  const isSm = size === 'sm';
+  const paddingClass = isSm ? 'px-3 py-1 text-xs' : 'px-3.5 py-1.5 text-sm';
+
   switch (priority) {
     case 'URGENT':
       return (
         <span
-          className={`inline-flex items-center gap-1 rounded-full font-semibold bg-error-container text-on-error-container animate-pulse ${
-            size === 'sm' ? 'px-2.5 py-0.5 text-label-sm font-label-sm' : 'px-3 py-1 text-label-md font-label-md'
-          }`}
+          className={`inline-flex items-center gap-1.5 rounded-full font-bold neu-inset-sm text-[#C53030] ${paddingClass}`}
         >
-          <span className="material-symbols-outlined text-[14px]">warning</span>
+          <span className="w-2 h-2 rounded-full bg-[#E53E3E] animate-pulse"></span>
           <span>URGENT</span>
         </span>
       );
     case 'HIGH':
       return (
         <span
-          className={`inline-flex items-center gap-1 rounded-full font-semibold bg-secondary-fixed text-on-secondary-fixed-variant ${
-            size === 'sm' ? 'px-2.5 py-0.5 text-label-sm font-label-sm' : 'px-3 py-1 text-label-md font-label-md'
-          }`}
+          className={`inline-flex items-center gap-1.5 rounded-full font-bold neu-inset-sm text-[#DD6B20] ${paddingClass}`}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+          <span className="w-2 h-2 rounded-full bg-[#ED8936]"></span>
           <span>HIGH</span>
         </span>
       );
     case 'MEDIUM':
       return (
         <span
-          className={`inline-flex items-center gap-1 rounded-full font-semibold bg-surface-container-high text-on-surface ${
-            size === 'sm' ? 'px-2.5 py-0.5 text-label-sm font-label-sm' : 'px-3 py-1 text-label-md font-label-md'
-          }`}
+          className={`inline-flex items-center gap-1.5 rounded-full font-bold neu-inset-sm text-[#6C63FF] ${paddingClass}`}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-surface-tint"></span>
+          <span className="w-2 h-2 rounded-full bg-[#6C63FF]"></span>
           <span>MEDIUM</span>
         </span>
       );
@@ -45,11 +42,9 @@ export const PriorityBadge: React.FC<PriorityBadgeProps> = ({ priority, size = '
     default:
       return (
         <span
-          className={`inline-flex items-center gap-1 rounded-full font-semibold bg-surface-container-low text-tertiary ${
-            size === 'sm' ? 'px-2.5 py-0.5 text-label-sm font-label-sm' : 'px-3 py-1 text-label-md font-label-md'
-          }`}
+          className={`inline-flex items-center gap-1.5 rounded-full font-bold neu-inset-sm text-[#6B7280] ${paddingClass}`}
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-outline"></span>
+          <span className="w-2 h-2 rounded-full bg-[#A0AEC0]"></span>
           <span>LOW</span>
         </span>
       );

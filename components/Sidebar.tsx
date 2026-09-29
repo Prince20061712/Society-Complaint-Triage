@@ -16,33 +16,34 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeCount = 26 }) => {
   const isResident = pathname === '/';
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-surface-container-lowest border-r border-outline-variant/40 z-50 flex flex-col justify-between py-6 px-4 shadow-[0_1px_8px_rgba(0,0,0,0.02)]">
-      <div className="flex flex-col gap-space-lg">
-        {/* Brand / Logo */}
-        <Link href="/dashboard" className="flex items-start gap-space-md px-space-xs group">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white shrink-0 mt-0.5 shadow-sm">
-            <span className="material-symbols-outlined text-[20px]">apartment</span>
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-[#E0E5EC] z-50 flex flex-col justify-between py-6 px-5 [box-shadow:6px_0_16px_rgb(163,177,198,0.5)]">
+      <div className="flex flex-col gap-6">
+        {/* Brand / Logo with Neumorphic Inset Well */}
+        <Link href="/dashboard" className="flex items-center gap-3.5 group">
+          <div className="w-11 h-11 rounded-2xl neu-inset-deep flex items-center justify-center text-[#6C63FF] shrink-0 group-hover:scale-105 transition-transform duration-300">
+            <span className="material-symbols-outlined text-[24px]">apartment</span>
           </div>
           <div className="flex flex-col">
-            <span className="font-headline-sm text-headline-sm text-on-surface leading-tight group-hover:text-primary transition-colors">
+            <span className="font-display font-extrabold text-lg text-[#3D4852] leading-tight tracking-tight group-hover:text-[#6C63FF] transition-colors">
               Society Triage
             </span>
-            <span className="font-label-sm text-label-sm text-on-surface-variant font-medium mt-0.5 tracking-normal">
+            <span className="text-xs text-[#6B7280] font-medium mt-0.5">
               Turn complaints into action
             </span>
           </div>
         </Link>
 
-        <div className="h-px bg-outline-variant/30 w-full my-space-xs"></div>
+        {/* Tactile Divider */}
+        <div className="h-[2px] neu-inset-sm w-full my-1 rounded-full"></div>
 
         {/* Navigation */}
-        <nav className="flex flex-col gap-1">
+        <nav className="flex flex-col gap-3">
           <Link
             href="/dashboard"
-            className={`flex items-center gap-space-md px-3 py-2 rounded-lg transition-all ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 font-medium text-sm ${
               isDashboard
-                ? 'bg-primary-container text-on-primary-container font-semibold shadow-sm'
-                : 'font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
+                ? 'neu-pressed text-[#6C63FF] font-bold'
+                : 'text-[#6B7280] hover:text-[#3D4852] hover:neu-flat-sm'
             }`}
           >
             <span className="material-symbols-outlined text-[20px]">dashboard</span>
@@ -51,27 +52,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeCount = 26 }) => {
 
           <Link
             href="/dashboard"
-            className={`flex items-center justify-between px-3 py-2 rounded-lg transition-all ${
+            className={`flex items-center justify-between px-4 py-3 rounded-2xl transition-all duration-300 font-medium text-sm ${
               isComplaints
-                ? 'bg-primary-container text-on-primary-container font-semibold shadow-sm'
-                : 'font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
+                ? 'neu-pressed text-[#6C63FF] font-bold'
+                : 'text-[#6B7280] hover:text-[#3D4852] hover:neu-flat-sm'
             }`}
           >
-            <div className="flex items-center gap-space-md">
+            <div className="flex items-center gap-3">
               <span className="material-symbols-outlined text-[20px]">inbox</span>
               <span>Complaints</span>
             </div>
-            <span className="px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm font-semibold">
+            <span className="px-2.5 py-0.5 rounded-full neu-inset-sm text-[#C53030] text-xs font-bold">
               {activeCount}
             </span>
           </Link>
 
           <Link
             href="/"
-            className={`flex items-center gap-space-md px-3 py-2 rounded-lg transition-all ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-300 font-medium text-sm ${
               isResident
-                ? 'bg-secondary-fixed text-on-secondary-fixed-variant font-semibold shadow-sm'
-                : 'font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface'
+                ? 'neu-pressed text-[#6C63FF] font-bold'
+                : 'text-[#6B7280] hover:text-[#3D4852] hover:neu-flat-sm'
             }`}
           >
             <span className="material-symbols-outlined text-[20px]">edit_note</span>
@@ -81,25 +82,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeCount = 26 }) => {
       </div>
 
       {/* Footer Profile & Society info */}
-      <div className="flex flex-col gap-space-md">
-        <div className="rounded-lg bg-surface-container-low p-space-md border border-outline-variant/30 flex flex-col gap-1">
+      <div className="flex flex-col gap-4">
+        {/* Society details card */}
+        <div className="neu-inset-sm rounded-2xl p-4 flex flex-col gap-1">
           <div className="flex items-center justify-between">
-            <span className="font-label-md text-label-md text-on-surface font-semibold">Green Valley Society</span>
-            <span className="w-2 h-2 rounded-full bg-secondary-container"></span>
+            <span className="text-xs font-bold text-[#3D4852]">Green Valley Society</span>
+            <span className="w-2 h-2 rounded-full bg-[#38B2AC]"></span>
           </div>
-          <span className="font-body-sm text-body-sm text-on-surface-variant">Wing A-D • 120 Flats</span>
+          <span className="text-xs text-[#6B7280]">Wing A-D • 120 Flats</span>
         </div>
 
-        <div className="flex items-center gap-space-sm p-1.5 rounded-lg border border-outline-variant/30 bg-surface-container-lowest">
-          <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center shrink-0">
-            <span className="material-symbols-outlined text-on-primary text-[18px]">person</span>
+        {/* Secretary Profile Pill */}
+        <div className="neu-flat-sm p-2 rounded-2xl flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl neu-inset-deep flex items-center justify-center text-[#6C63FF] shrink-0">
+            <span className="material-symbols-outlined text-[18px]">person</span>
           </div>
           <div className="flex flex-col min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
-              <span className="font-label-md text-label-md text-on-surface truncate">Rajesh Mehta</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" title="Online Secretary Active"></span>
+              <span className="text-xs font-bold text-[#3D4852] truncate">Rajesh Mehta</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#38B2AC] shrink-0" title="Active"></span>
             </div>
-            <span className="font-label-sm text-label-sm text-on-surface-variant truncate">Hon. Secretary</span>
+            <span className="text-[11px] text-[#6B7280] truncate">Hon. Secretary</span>
           </div>
         </div>
       </div>

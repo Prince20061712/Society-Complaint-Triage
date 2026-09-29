@@ -84,64 +84,68 @@ export const ComplaintForm: React.FC<ComplaintFormProps> = ({ onSubmitted }) => 
   return (
     <div className="w-full max-w-2xl mx-auto">
       {createdTicket ? (
-        <div className="rounded-2xl bg-surface-container-lowest p-space-xl shadow-md border border-outline-variant/30 space-y-space-lg animate-in fade-in zoom-in-95">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-surface-container-high text-primary flex items-center justify-center shrink-0">
-              <span className="material-symbols-outlined text-[28px]">task_alt</span>
+        <div className="neu-card p-8 sm:p-10 space-y-6 animate-in fade-in">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl neu-inset-deep text-[#38B2AC] flex items-center justify-center shrink-0">
+              <span className="material-symbols-outlined text-[32px]">task_alt</span>
             </div>
             <div>
-              <span className="inline-block px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant text-label-sm font-label-sm">
+              <span className="inline-block px-3 py-1 rounded-full neu-inset-sm text-[#6C63FF] text-xs font-bold">
                 AI TRIAGED &amp; LOGGED
               </span>
-              <h2 className="font-headline-md text-headline-md text-on-surface">Complaint Ticket Generated</h2>
+              <h2 className="font-display font-extrabold text-2xl text-[#3D4852] mt-1">
+                Complaint Ticket Generated
+              </h2>
             </div>
           </div>
 
-          <div className="rounded-xl bg-surface-container-low p-space-md border border-outline-variant/30 space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-outline-variant/30 pb-2">
-              <div className="flex items-center gap-2">
-                <span className="font-headline-sm text-primary font-bold">Ticket #{createdTicket.ticketNumber}</span>
+          <div className="neu-inset-sm rounded-2xl p-6 space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#D1D9E6]/50 pb-3">
+              <div className="flex items-center gap-3">
+                <span className="font-display font-bold text-lg text-[#6C63FF]">
+                  Ticket #{createdTicket.ticketNumber}
+                </span>
                 <PriorityBadge priority={createdTicket.priority} />
               </div>
               <StatusBadge status={createdTicket.status} />
             </div>
 
             <div>
-              <h4 className="font-headline-sm text-on-surface">{createdTicket.title}</h4>
-              <p className="font-body-md text-on-surface-variant mt-1">{createdTicket.summary}</p>
+              <h4 className="font-display font-bold text-base text-[#3D4852]">{createdTicket.title}</h4>
+              <p className="text-sm text-[#6B7280] mt-1 leading-relaxed">{createdTicket.summary}</p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-2 text-body-sm text-on-surface-variant border-t border-outline-variant/20">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-3 text-xs text-[#6B7280] border-t border-[#D1D9E6]/40">
               <div>
-                <span className="block font-label-sm text-outline">Category</span>
-                <span className="font-semibold text-on-surface">{createdTicket.category}</span>
+                <span className="block font-medium text-[#A0AEC0]">Category</span>
+                <span className="font-bold text-[#3D4852] mt-0.5 block">{createdTicket.category}</span>
               </div>
               <div>
-                <span className="block font-label-sm text-outline">Language Detected</span>
-                <span className="font-semibold text-on-surface">🗣️ {createdTicket.language}</span>
+                <span className="block font-medium text-[#A0AEC0]">Language Detected</span>
+                <span className="font-bold text-[#3D4852] mt-0.5 block">🗣️ {createdTicket.language}</span>
               </div>
               <div>
-                <span className="block font-label-sm text-outline">Flat &amp; Wing</span>
-                <span className="font-semibold text-on-surface">
+                <span className="block font-medium text-[#A0AEC0]">Flat &amp; Wing</span>
+                <span className="font-bold text-[#3D4852] mt-0.5 block">
                   {createdTicket.flatNumber} ({createdTicket.wing})
                 </span>
               </div>
             </div>
 
             {createdTicket.vendorAlerted && (
-              <div className="p-2.5 rounded-lg bg-surface-container-lowest border border-outline-variant/40 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[18px] text-primary">engineering</span>
-                  <span className="font-label-md text-on-surface">
+              <div className="p-3.5 rounded-2xl neu-flat flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span className="material-symbols-outlined text-[20px] text-[#6C63FF]">engineering</span>
+                  <span className="text-xs text-[#3D4852]">
                     Assigned Vendor: <strong>{createdTicket.vendorAlerted}</strong>
                   </span>
                 </div>
                 {createdTicket.vendorPhone && (
                   <a
                     href={`tel:${createdTicket.vendorPhone}`}
-                    className="text-primary font-label-sm hover:underline flex items-center gap-1 font-semibold"
+                    className="text-[#6C63FF] hover:text-[#8B84FF] text-xs font-bold flex items-center gap-1"
                   >
-                    <span className="material-symbols-outlined text-[14px]">call</span>
+                    <span className="material-symbols-outlined text-[15px]">call</span>
                     <span>{createdTicket.vendorPhone}</span>
                   </a>
                 )}
@@ -149,8 +153,8 @@ export const ComplaintForm: React.FC<ComplaintFormProps> = ({ onSubmitted }) => 
             )}
 
             {createdTicket.possibleDuplicateTicket && (
-              <div className="p-2.5 rounded-lg bg-error-container/40 border border-error/30 text-on-error-container text-body-sm flex items-start gap-2">
-                <span className="material-symbols-outlined text-[18px] text-error shrink-0">content_copy</span>
+              <div className="p-3.5 rounded-2xl neu-inset-sm text-[#C53030] text-xs flex items-start gap-2.5">
+                <span className="material-symbols-outlined text-[18px] shrink-0">content_copy</span>
                 <div>
                   <strong>Potential duplicate detected:</strong> This issue matches existing ticket{' '}
                   <strong>#{createdTicket.possibleDuplicateTicket}</strong>. The committee has been notified to group
@@ -160,19 +164,19 @@ export const ComplaintForm: React.FC<ComplaintFormProps> = ({ onSubmitted }) => 
             )}
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
             <button
               onClick={() => {
                 setCreatedTicket(null);
                 setMessage('');
               }}
-              className="w-full sm:w-1/2 py-2.5 px-4 rounded-xl bg-surface-container-high text-on-surface hover:bg-surface-container-highest font-label-md transition-colors text-center cursor-pointer"
+              className="w-full sm:w-1/2 py-3 px-5 neu-btn text-xs font-bold text-[#3D4852] hover:text-[#6C63FF] text-center cursor-pointer"
             >
               Submit Another Complaint
             </button>
             <Link
               href="/dashboard"
-              className="w-full sm:w-1/2 py-2.5 px-4 rounded-xl bg-primary-container text-on-primary-container hover:opacity-90 font-label-md font-semibold transition-all text-center flex items-center justify-center gap-1.5 shadow-sm"
+              className="w-full sm:w-1/2 py-3 px-5 neu-btn-primary text-xs font-bold text-center flex items-center justify-center gap-2"
             >
               <span>View Committee Dashboard</span>
               <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -182,30 +186,34 @@ export const ComplaintForm: React.FC<ComplaintFormProps> = ({ onSubmitted }) => 
       ) : (
         <form
           onSubmit={handleSubmit}
-          className="rounded-2xl bg-surface-container-lowest p-space-xl shadow-md border border-outline-variant/30 space-y-space-md"
+          className="neu-card p-8 sm:p-10 space-y-6"
         >
-          <div className="space-y-1">
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-label-sm text-label-sm bg-primary-fixed text-on-primary-fixed font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
+          <div className="space-y-1.5">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold neu-inset-sm text-[#6C63FF]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#6C63FF]"></span>
               RESIDENT COMPLAINT DESK
             </span>
-            <h2 className="font-headline-md text-headline-md text-on-surface">Submit a Society Complaint</h2>
-            <p className="font-body-md text-body-md text-on-surface-variant">
+            <h2 className="font-display font-extrabold text-2xl text-[#3D4852] tracking-tight">
+              Submit a Society Complaint
+            </h2>
+            <p className="text-sm text-[#6B7280]">
               Write naturally in <strong>English, Hindi, or Hinglish</strong>. Our AI engine will auto-triage,
               categorize, and prioritize for the RWA committee.
             </p>
           </div>
 
           {/* Preset Buttons */}
-          <div className="space-y-1.5 pt-1">
-            <span className="font-label-sm text-outline uppercase tracking-wider block">Try quick demo presets:</span>
-            <div className="flex flex-wrap gap-1.5">
+          <div className="space-y-2 pt-1">
+            <span className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wider block">
+              Try quick demo presets:
+            </span>
+            <div className="flex flex-wrap gap-2">
               {presets.map((p, idx) => (
                 <button
                   key={idx}
                   type="button"
                   onClick={() => handleApplyPreset(p)}
-                  className="px-2.5 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-on-surface font-label-sm text-label-sm border border-outline-variant/40 transition-colors cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl neu-btn text-xs font-bold text-[#3D4852] hover:text-[#6C63FF] cursor-pointer transition-all"
                 >
                   ⚡ {p.label}
                 </button>
@@ -214,27 +222,27 @@ export const ComplaintForm: React.FC<ComplaintFormProps> = ({ onSubmitted }) => 
           </div>
 
           {error && (
-            <div className="p-3 rounded-lg bg-error-container text-on-error-container text-body-sm flex items-center gap-2">
+            <div className="p-3.5 rounded-2xl neu-inset-sm text-[#C53030] text-xs font-semibold flex items-center gap-2">
               <span className="material-symbols-outlined text-[18px]">error</span>
               <span>{error}</span>
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-md pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-1">
             <div>
-              <label className="block font-label-md text-label-md text-on-surface mb-1">Resident Full Name</label>
+              <label className="block text-xs font-bold text-[#3D4852] mb-2">Resident Full Name</label>
               <input
                 required
                 type="text"
                 placeholder="e.g. Rahul Sharma"
                 value={residentName}
                 onChange={(e) => setResidentName(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-surface-container-low text-on-surface placeholder:text-outline border border-outline-variant/40 focus:ring-2 focus:ring-primary focus:outline-none"
+                className="w-full px-4 py-3 rounded-2xl neu-input text-sm placeholder:text-[#A0AEC0]"
               />
             </div>
 
             <div>
-              <label className="block font-label-md text-label-md text-on-surface mb-1">
+              <label className="block text-xs font-bold text-[#3D4852] mb-2">
                 Flat Number (Wing &amp; Flat)
               </label>
               <input
@@ -243,13 +251,13 @@ export const ComplaintForm: React.FC<ComplaintFormProps> = ({ onSubmitted }) => 
                 placeholder="e.g. A-203 or B-105"
                 value={flatNumber}
                 onChange={(e) => setFlatNumber(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-surface-container-low text-on-surface placeholder:text-outline border border-outline-variant/40 focus:ring-2 focus:ring-primary focus:outline-none"
+                className="w-full px-4 py-3 rounded-2xl neu-input text-sm placeholder:text-[#A0AEC0]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block font-label-md text-label-md text-on-surface mb-1">
+            <label className="block text-xs font-bold text-[#3D4852] mb-2">
               Your Complaint / Issue Details
             </label>
             <textarea
@@ -258,9 +266,9 @@ export const ComplaintForm: React.FC<ComplaintFormProps> = ({ onSubmitted }) => 
               placeholder="e.g. 2nd floor ki lift kal se band hai senior citizens ko problem ho rahi hai..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-surface-container-low text-on-surface placeholder:text-outline border border-outline-variant/40 focus:ring-2 focus:ring-primary focus:outline-none resize-none font-body-md"
+              className="w-full px-4 py-3 rounded-2xl neu-input text-sm placeholder:text-[#A0AEC0] resize-none leading-relaxed"
             ></textarea>
-            <span className="text-body-sm text-outline mt-1 block">
+            <span className="text-xs text-[#6B7280] mt-1.5 block">
               Tip: Mention specific location (floor, wing, flat, car number) for faster automated resolution.
             </span>
           </div>
@@ -268,7 +276,7 @@ export const ComplaintForm: React.FC<ComplaintFormProps> = ({ onSubmitted }) => 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3 px-4 rounded-xl bg-primary-container text-on-primary-container hover:opacity-90 font-label-lg font-semibold transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer disabled:opacity-50"
+            className="w-full py-4 px-6 neu-btn-primary text-sm font-bold flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
             {isSubmitting ? (
               <>

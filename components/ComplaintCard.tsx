@@ -31,20 +31,6 @@ function getCategoryIcon(cat: ComplaintCategory): string {
   }
 }
 
-function getBorderAccent(priority: string): string {
-  switch (priority) {
-    case 'URGENT':
-      return 'bg-error';
-    case 'HIGH':
-      return 'bg-secondary-container';
-    case 'MEDIUM':
-      return 'bg-surface-tint';
-    case 'LOW':
-    default:
-      return 'bg-outline';
-  }
-}
-
 function formatTimeAgo(isoString: string): string {
   const diff = Date.now() - new Date(isoString).getTime();
   const mins = Math.floor(diff / 60000);
@@ -56,87 +42,89 @@ function formatTimeAgo(isoString: string): string {
   return `${days} day${days > 1 ? 's' : ''} ago`;
 }
 
-export const ComplaintCard: React.FC<ComplaintCardProps> = ({ complaint, onStatusChange }) => {
-  const accentClass = getBorderAccent(complaint.priority);
-
+export const ComplaintCard: React.FC<ComplaintCardProps> = ({ complaint }) => {
   return (
-    <div className="relative rounded-xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col lg:flex-row items-start lg:items-center justify-between gap-space-lg">
-      <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${accentClass} rounded-l-xl`}></div>
+    <div className="neu-card p-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 transition-all duration-300">
+      <div className="flex items-start gap-5 max-w-3xl">
+        {/* Nested Depth: Inset Deep Category Icon Well */}
+        <div className="w-14 h-14 rounded-2xl neu-inset-deep flex items-center justify-center shrink-0 text-[#6C63FF]">
+          <span className="material-symbols-outlined text-[26px]">{getCategoryIcon(complaint.category)}</span>
+        </div>
 
-      <div className="space-y-2 max-w-3xl pl-1">
-        {/* Badges row */}
-        <div className="flex flex-wrap items-center gap-2">
-          <PriorityBadge priority={complaint.priority} />
+        <div className="space-y-2">
+          {/* Badges row */}
+          <div className="flex flex-wrap items-center gap-2">
+            <PriorityBadge priority={complaint.priority} />
 
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-label-sm text-label-sm bg-surface-container-high text-on-surface">
-            <span className="material-symbols-outlined text-[14px]">{getCategoryIcon(complaint.category)}</span>
-            <span>{complaint.category}</span>
-          </span>
-
-          <span className="font-label-sm text-label-sm text-on-surface-variant">• Ticket #{complaint.ticketNumber}</span>
-
-          {complaint.language && complaint.language !== 'ENGLISH' && (
-            <span className="px-2 py-0.5 rounded bg-surface-container-low text-tertiary font-label-sm text-label-sm">
-              🗣️ {complaint.language}
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full neu-flat-sm text-xs font-bold text-[#3D4852]">
+              {complaint.category}
             </span>
-          )}
 
-          {/* DUPLICATE INDICATOR */}
-          {complaint.possibleDuplicateTicket && (
-            <DuplicateAlert ticketNumber={complaint.possibleDuplicateTicket} reason={complaint.duplicateReason} />
-          )}
-        </div>
+            <span className="text-xs font-medium text-[#6B7280]">• Ticket #{complaint.ticketNumber}</span>
 
-        {/* Title and summary */}
-        <div>
-          <Link href={`/complaints/${complaint.id}`}>
-            <h3 className="font-headline-sm text-headline-sm text-on-surface hover:text-primary transition-colors cursor-pointer">
-              {complaint.title}
-            </h3>
-          </Link>
-          <p className="font-body-md text-body-md text-on-surface-variant mt-0.5">{complaint.summary}</p>
-        </div>
+            {complaint.language && complaint.language !== 'ENGLISH' && (
+              <span className="px-2.5 py-0.5 rounded-full neu-inset-sm text-[#6B7280] text-xs font-medium">
+                🗣️ {complaint.language}
+              </span>
+            )}
 
-        {/* Metadata footer */}
-        <div className="flex flex-wrap items-center gap-x-space-md gap-y-1 font-body-sm text-body-sm text-on-surface-variant">
-          <span className="font-medium text-on-surface bg-surface-container-low px-2 py-0.5 rounded">
-            Flat {complaint.flatNumber} • {complaint.residentName}
-          </span>
-          <span>•</span>
-          <span
-            className={`flex items-center gap-1 ${
-              complaint.priority === 'URGENT' ? 'text-error font-medium' : ''
-            }`}
-          >
-            <span className="material-symbols-outlined text-[16px]">schedule</span>
-            {formatTimeAgo(complaint.createdAt)}
-          </span>
-          <span>•</span>
-          <StatusBadge status={complaint.status} />
+            {/* Duplicate indicator */}
+            {complaint.possibleDuplicateTicket && (
+              <DuplicateAlert ticketNumber={complaint.possibleDuplicateTicket} reason={complaint.duplicateReason} />
+            )}
+          </div>
+
+          {/* Title and summary */}
+          <div>
+            <Link href={`/complaints/${complaint.id}`}>
+              <h3 className="text-lg font-bold font-display text-[#3D4852] hover:text-[#6C63FF] transition-colors cursor-pointer tracking-tight">
+                {complaint.title}
+              </h3>
+            </Link>
+            <p className="text-sm text-[#6B7280] leading-relaxed mt-0.5">{complaint.summary}</p>
+          </div>
+
+          {/* Metadata footer */}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-[#6B7280]">
+            <span className="font-semibold text-[#3D4852] neu-inset-sm px-2.5 py-1 rounded-xl">
+              Flat {complaint.flatNumber} • {complaint.residentName}
+            </span>
+            <span>•</span>
+            <span
+              className={`flex items-center gap-1 ${
+                complaint.priority === 'URGENT' ? 'text-[#C53030] font-bold' : ''
+              }`}
+            >
+              <span className="material-symbols-outlined text-[15px]">schedule</span>
+              {formatTimeAgo(complaint.createdAt)}
+            </span>
+            <span>•</span>
+            <StatusBadge status={complaint.status} />
+          </div>
         </div>
       </div>
 
       {/* Actions */}
-      <div className="flex sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-end gap-2 w-full lg:w-auto shrink-0">
+      <div className="flex sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-end gap-3 w-full lg:w-auto shrink-0 self-end lg:self-center">
         {complaint.priority === 'URGENT' && complaint.vendorPhone && (
           <a
-            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-lg bg-error-container text-on-error-container font-label-md text-label-md hover:bg-error-container/80 transition-colors shadow-sm"
+            className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-2xl neu-flat hover:neu-flat-hover text-[#C53030] font-bold text-xs transition-all"
             href={`tel:${complaint.vendorPhone}`}
           >
             <span className="material-symbols-outlined text-[18px]">call</span>
-            <span>Call Vendor ({complaint.vendorAlerted?.split(' ')[0] || 'Technician'})</span>
+            <span>Call {complaint.vendorAlerted?.split(' ')[0] || 'Vendor'}</span>
           </a>
         )}
 
         <Link
           href={`/complaints/${complaint.id}`}
-          className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-1 px-4 py-2 rounded-lg font-label-md text-label-md transition-colors shadow-sm ${
+          className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-5 py-2.5 text-xs font-bold transition-all ${
             complaint.priority === 'URGENT'
-              ? 'bg-primary-container text-on-primary-container hover:opacity-90'
-              : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'
+              ? 'neu-btn-primary'
+              : 'neu-btn hover:text-[#6C63FF]'
           }`}
         >
-          <span>View Complaint</span>
+          <span>View Ticket</span>
           <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
         </Link>
       </div>

@@ -106,9 +106,9 @@ export default function ComplaintDetailPage({ params }: { params: Promise<{ id: 
 
   if (loading) {
     return (
-      <div className="bg-background min-h-screen text-on-surface antialiased flex items-center justify-center">
-        <div className="flex items-center gap-2 text-primary font-headline-sm">
-          <span className="material-symbols-outlined animate-spin">progress_activity</span>
+      <div className="bg-[#E0E5EC] min-h-screen text-[#3D4852] font-body flex items-center justify-center">
+        <div className="flex items-center gap-3 font-display font-bold text-lg text-[#6C63FF]">
+          <span className="material-symbols-outlined animate-spin text-[26px]">progress_activity</span>
           <span>Loading complaint details...</span>
         </div>
       </div>
@@ -117,11 +117,11 @@ export default function ComplaintDetailPage({ params }: { params: Promise<{ id: 
 
   if (!complaint) {
     return (
-      <div className="bg-background min-h-screen text-on-surface antialiased flex flex-col items-center justify-center gap-4">
-        <h2 className="font-headline-md">Complaint ticket not found</h2>
+      <div className="bg-[#E0E5EC] min-h-screen text-[#3D4852] font-body flex flex-col items-center justify-center gap-4">
+        <h2 className="font-display font-extrabold text-2xl text-[#3D4852]">Complaint ticket not found</h2>
         <Link
           href="/dashboard"
-          className="px-4 py-2 rounded-xl bg-primary-container text-on-primary-container font-label-md"
+          className="px-6 py-3 rounded-2xl neu-btn-primary font-bold text-xs"
         >
           Return to Dashboard
         </Link>
@@ -130,52 +130,54 @@ export default function ComplaintDetailPage({ params }: { params: Promise<{ id: 
   }
 
   return (
-    <div className="bg-background min-h-screen text-on-surface antialiased">
+    <div className="bg-[#E0E5EC] min-h-screen text-[#3D4852] font-body antialiased">
       <Sidebar />
 
       <div className="pl-64">
         <Header />
 
-        <main className="relative pt-16 w-full min-h-screen bg-background">
-          <div className="p-gutter-lg max-w-[1200px] mx-auto space-y-6">
-            {/* Top Breadcrumbs & Back */}
+        <main className="relative pt-18 w-full min-h-screen pb-16">
+          <div className="p-8 max-w-[1200px] mx-auto space-y-6">
+            {/* Top Back Link & Feedback */}
             <div className="flex items-center justify-between">
               <Link
                 href="/dashboard"
-                className="inline-flex items-center gap-1.5 text-on-surface-variant hover:text-primary transition-colors font-label-md"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl neu-btn text-xs font-bold text-[#6B7280] hover:text-[#6C63FF] transition-all"
               >
                 <span className="material-symbols-outlined text-[18px]">arrow_back</span>
                 <span>Back to Dashboard Queue</span>
               </Link>
 
               {successMsg && (
-                <div className="px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant text-label-sm font-semibold animate-in fade-in">
+                <div className="px-4 py-1.5 rounded-full neu-inset-sm text-[#38B2AC] text-xs font-bold animate-in fade-in">
                   ✓ {successMsg}
                 </div>
               )}
             </div>
 
-            {/* Main Details Card */}
-            <div className="rounded-2xl bg-surface-container-lowest p-space-xl shadow-sm border border-outline-variant/30 space-y-6">
+            {/* Main Neumorphic Card */}
+            <div className="neu-card p-8 sm:p-10 space-y-8">
               {/* Header Info */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-outline-variant/30 pb-4">
-                <div className="space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[#D1D9E6]/50">
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center gap-3">
                     <PriorityBadge priority={complaint.priority} size="md" />
-                    <span className="px-2.5 py-0.5 rounded-md font-label-sm text-label-sm bg-surface-container-high text-on-surface font-semibold">
+                    <span className="px-3.5 py-1 rounded-full neu-flat-sm text-xs font-bold text-[#3D4852]">
                       {complaint.category}
                     </span>
-                    <span className="font-label-md text-on-surface-variant">Ticket #{complaint.ticketNumber}</span>
+                    <span className="text-xs font-bold text-[#6B7280]">Ticket #{complaint.ticketNumber}</span>
                   </div>
-                  <h1 className="font-headline-lg text-headline-lg text-on-surface mt-1">{complaint.title}</h1>
+                  <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-[#3D4852] tracking-tight">
+                    {complaint.title}
+                  </h1>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4">
                   <StatusBadge status={complaint.status} />
                   {complaint.vendorPhone && (
                     <a
                       href={`tel:${complaint.vendorPhone}`}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-error-container text-on-error-container font-label-md text-label-md hover:bg-error-container/80 transition-colors shadow-sm"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl neu-flat hover:neu-flat-hover text-[#C53030] font-bold text-xs transition-all"
                     >
                       <span className="material-symbols-outlined text-[18px]">call</span>
                       <span>Call Vendor</span>
@@ -186,18 +188,20 @@ export default function ComplaintDetailPage({ params }: { params: Promise<{ id: 
 
               {/* Duplicate review alert */}
               {complaint.possibleDuplicateTicket && (
-                <div className="p-4 rounded-xl bg-secondary-fixed/50 border border-secondary/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-secondary text-[24px]">content_copy</span>
+                <div className="p-5 rounded-2xl neu-inset-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-10 h-10 rounded-xl neu-inset-deep text-[#6C63FF] flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-[22px]">content_copy</span>
+                    </div>
                     <div>
-                      <h4 className="font-label-md font-semibold text-on-surface">
+                      <h4 className="text-sm font-bold text-[#3D4852]">
                         Potential Duplicate Ticket Detected
                       </h4>
-                      <p className="font-body-sm text-on-surface-variant">
+                      <p className="text-xs text-[#6B7280] mt-0.5">
                         AI marked this as similar to{' '}
                         <Link
                           href={`/complaints/${complaint.possibleDuplicateTicket.toLowerCase()}`}
-                          className="text-primary underline font-bold"
+                          className="text-[#6C63FF] hover:underline font-bold"
                         >
                           #{complaint.possibleDuplicateTicket}
                         </Link>{' '}
@@ -209,37 +213,41 @@ export default function ComplaintDetailPage({ params }: { params: Promise<{ id: 
                   <button
                     onClick={handleDismissDuplicate}
                     disabled={updating}
-                    className="px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface hover:bg-surface-container-high text-label-sm font-semibold transition-colors border border-outline-variant/40 shrink-0 cursor-pointer"
+                    className="px-4 py-2 rounded-2xl neu-btn text-xs font-bold text-[#3D4852] hover:text-[#6C63FF] transition-all shrink-0 cursor-pointer"
                   >
                     Confirm &amp; Dismiss Duplicate
                   </button>
                 </div>
               )}
 
-              {/* AI Summary and Raw Message */}
+              {/* AI Summary and Raw Message (Dual Inset Wells) */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="rounded-xl bg-surface-container-low p-space-md border border-outline-variant/30 space-y-2">
-                  <div className="flex items-center gap-1.5 text-secondary">
-                    <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
-                    <h3 className="font-label-md font-semibold text-on-surface">AI Normalized English Summary</h3>
+                <div className="neu-inset-sm rounded-2xl p-6 space-y-3">
+                  <div className="flex items-center gap-2 text-[#6C63FF]">
+                    <span className="material-symbols-outlined text-[20px]">auto_awesome</span>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#3D4852]">
+                      AI Normalized English Summary
+                    </h3>
                   </div>
-                  <p className="font-body-md text-on-surface leading-relaxed">{complaint.summary}</p>
-                  <div className="pt-2 flex items-center gap-3 text-label-sm text-outline border-t border-outline-variant/30">
+                  <p className="text-sm text-[#3D4852] leading-relaxed">{complaint.summary}</p>
+                  <div className="pt-3 flex items-center gap-3 text-xs text-[#6B7280] border-t border-[#D1D9E6]/40">
                     <span>Language: 🗣️ {complaint.language}</span>
                     <span>•</span>
-                    <span>Triage Confidence: {Math.round(complaint.confidence * 100)}%</span>
+                    <span>Confidence: {Math.round(complaint.confidence * 100)}%</span>
                   </div>
                 </div>
 
-                <div className="rounded-xl bg-surface-container-low p-space-md border border-outline-variant/30 space-y-2">
-                  <div className="flex items-center gap-1.5 text-on-surface-variant">
-                    <span className="material-symbols-outlined text-[18px]">chat</span>
-                    <h3 className="font-label-md font-semibold text-on-surface">Original Resident Message</h3>
+                <div className="neu-inset-sm rounded-2xl p-6 space-y-3">
+                  <div className="flex items-center gap-2 text-[#6B7280]">
+                    <span className="material-symbols-outlined text-[20px]">chat</span>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#3D4852]">
+                      Original Resident Message
+                    </h3>
                   </div>
-                  <blockquote className="italic font-body-md text-on-surface-variant border-l-2 border-primary pl-3 py-1">
+                  <blockquote className="italic text-sm text-[#6B7280] border-l-2 border-[#6C63FF] pl-3 py-1">
                     &ldquo;{complaint.rawMessage}&rdquo;
                   </blockquote>
-                  <div className="pt-2 flex items-center gap-3 text-label-sm text-outline border-t border-outline-variant/30">
+                  <div className="pt-3 flex items-center gap-3 text-xs text-[#6B7280] border-t border-[#D1D9E6]/40">
                     <span>Resident: {complaint.residentName}</span>
                     <span>•</span>
                     <span>Flat {complaint.flatNumber} ({complaint.wing})</span>
@@ -248,19 +256,21 @@ export default function ComplaintDetailPage({ params }: { params: Promise<{ id: 
               </div>
 
               {/* Status transition controls */}
-              <div className="p-space-md rounded-xl bg-surface-container-lowest border border-outline-variant/30 space-y-3">
-                <h3 className="font-label-md font-semibold text-on-surface">Update Complaint Status</h3>
-                <div className="flex flex-wrap gap-2">
+              <div className="p-6 rounded-2xl neu-card space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#3D4852]">
+                  Update Complaint Status
+                </h3>
+                <div className="flex flex-wrap gap-3">
                   {(['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'] as ComplaintStatus[]).map((st) => (
                     <button
                       key={st}
                       type="button"
                       disabled={updating || complaint.status === st}
                       onClick={() => handleUpdateStatus(st)}
-                      className={`px-4 py-2 rounded-xl font-label-md transition-all cursor-pointer ${
+                      className={`px-5 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
                         complaint.status === st
-                          ? 'bg-primary-container text-on-primary-container font-bold shadow-sm'
-                          : 'bg-surface-container-high text-on-surface hover:bg-surface-container-highest'
+                          ? 'neu-pressed text-[#6C63FF] ring-2 ring-[#6C63FF] ring-offset-2 ring-offset-[#E0E5EC]'
+                          : 'neu-btn text-[#3D4852] hover:text-[#6C63FF]'
                       } disabled:opacity-50`}
                     >
                       {st === 'IN_PROGRESS' ? 'IN PROGRESS' : st}
@@ -271,33 +281,35 @@ export default function ComplaintDetailPage({ params }: { params: Promise<{ id: 
 
               {/* Committee notes & audit log */}
               <div className="space-y-4">
-                <h3 className="font-headline-sm text-on-surface">Committee Notes &amp; Audit Trail</h3>
+                <h3 className="font-display font-bold text-lg text-[#3D4852]">
+                  Committee Notes &amp; Audit Trail
+                </h3>
 
-                <form onSubmit={handleAddNote} className="flex gap-2">
+                <form onSubmit={handleAddNote} className="flex gap-3">
                   <input
                     type="text"
                     placeholder="Add an internal note or vendor update..."
                     value={newNote}
                     onChange={(e) => setNewNote(e.target.value)}
-                    className="flex-1 px-3.5 py-2 rounded-xl bg-surface-container-low text-on-surface placeholder:text-outline border border-outline-variant/40 focus:ring-2 focus:ring-primary focus:outline-none font-body-sm"
+                    className="flex-1 px-4 py-3 rounded-2xl neu-input text-sm placeholder:text-[#A0AEC0]"
                   />
                   <button
                     type="submit"
                     disabled={updating || !newNote.trim()}
-                    className="px-4 py-2 rounded-xl bg-primary text-white font-label-md font-semibold hover:opacity-90 transition-opacity disabled:opacity-40 cursor-pointer"
+                    className="px-6 py-3 neu-btn-primary text-xs font-bold disabled:opacity-40 cursor-pointer"
                   >
                     Add Note
                   </button>
                 </form>
 
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {complaint.notes?.map((n, i) => (
                     <div
                       key={i}
-                      className="p-3 rounded-lg bg-surface-container-low text-body-sm text-on-surface flex items-start gap-2 border border-outline-variant/20"
+                      className="p-4 rounded-2xl neu-inset-sm text-xs text-[#3D4852] flex items-start gap-3"
                     >
-                      <span className="material-symbols-outlined text-[16px] text-tertiary mt-0.5">sticky_note_2</span>
-                      <span>{n}</span>
+                      <span className="material-symbols-outlined text-[16px] text-[#6C63FF] mt-0.5">sticky_note_2</span>
+                      <span className="leading-relaxed">{n}</span>
                     </div>
                   ))}
                 </div>

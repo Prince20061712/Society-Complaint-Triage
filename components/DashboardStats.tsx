@@ -18,30 +18,33 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({
   onSelectPriority,
 }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {/* URGENT Card */}
       <div
         onClick={() => onSelectPriority?.('URGENT')}
-        className={`relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md transition-all cursor-pointer ${
-          activeFilter === 'URGENT' ? 'ring-2 ring-error' : ''
+        className={`neu-card p-6 cursor-pointer flex flex-col justify-between group ${
+          activeFilter === 'URGENT' ? 'neu-pressed ring-2 ring-[#E53E3E] ring-offset-4 ring-offset-[#E0E5EC]' : ''
         }`}
       >
-        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-error"></div>
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-error-container text-on-error-container">
-              <span className="w-1.5 h-1.5 rounded-full bg-error"></span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold neu-inset-sm text-[#C53030]">
+              <span className="w-2 h-2 rounded-full bg-[#E53E3E] animate-pulse"></span>
               URGENT
             </span>
-            <div className="font-headline-xl text-headline-xl text-on-surface tabular-nums">{urgent}</div>
+            <div className="text-4xl font-extrabold text-[#3D4852] font-display tabular-nums tracking-tight mt-2">
+              {urgent}
+            </div>
           </div>
-          <div className="w-9 h-9 rounded-lg bg-error-container/60 flex items-center justify-center text-error">
-            <span className="material-symbols-outlined text-[20px]">e911_emergency</span>
+          {/* Nested Inset Deep Icon Well */}
+          <div className="w-12 h-12 rounded-2xl neu-inset-deep flex items-center justify-center text-[#E53E3E] group-hover:scale-105 transition-transform duration-300">
+            <span className="material-symbols-outlined text-[24px]">e911_emergency</span>
           </div>
         </div>
-        <div className="mt-space-md pt-space-xs flex flex-col gap-0.5">
-          <span className="font-label-md text-label-md text-on-surface">Needs immediate attention</span>
-          <span className="font-body-sm text-body-sm text-error font-medium">
+
+        <div className="mt-4 pt-3 border-t border-[#D1D9E6]/40 flex flex-col gap-0.5">
+          <span className="text-sm font-semibold text-[#3D4852]">Needs immediate attention</span>
+          <span className="text-xs font-medium text-[#C53030]">
             {urgent > 0 ? `🚨 ${urgent} Emergency issue${urgent > 1 ? 's' : ''}` : '✨ Zero emergencies'}
           </span>
         </div>
@@ -50,78 +53,87 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({
       {/* HIGH Card */}
       <div
         onClick={() => onSelectPriority?.('HIGH')}
-        className={`relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md transition-all cursor-pointer ${
-          activeFilter === 'HIGH' ? 'ring-2 ring-secondary-container' : ''
+        className={`neu-card p-6 cursor-pointer flex flex-col justify-between group ${
+          activeFilter === 'HIGH' ? 'neu-pressed ring-2 ring-[#DD6B20] ring-offset-4 ring-offset-[#E0E5EC]' : ''
         }`}
       >
-        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-secondary-container"></div>
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-secondary-fixed text-on-secondary-fixed-variant">
-              <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold neu-inset-sm text-[#DD6B20]">
+              <span className="w-2 h-2 rounded-full bg-[#ED8936]"></span>
               HIGH
             </span>
-            <div className="font-headline-xl text-headline-xl text-on-surface tabular-nums">{high}</div>
+            <div className="text-4xl font-extrabold text-[#3D4852] font-display tabular-nums tracking-tight mt-2">
+              {high}
+            </div>
           </div>
-          <div className="w-9 h-9 rounded-lg bg-secondary-fixed/50 flex items-center justify-center text-secondary">
-            <span className="material-symbols-outlined text-[20px]">warning</span>
+          {/* Nested Inset Deep Icon Well */}
+          <div className="w-12 h-12 rounded-2xl neu-inset-deep flex items-center justify-center text-[#DD6B20] group-hover:scale-105 transition-transform duration-300">
+            <span className="material-symbols-outlined text-[24px]">warning</span>
           </div>
         </div>
-        <div className="mt-space-md pt-space-xs flex flex-col gap-0.5">
-          <span className="font-label-md text-label-md text-on-surface">Requires attention soon</span>
-          <span className="font-body-sm text-body-sm text-on-surface-variant font-medium">💧 Water &amp; Lift issues</span>
+
+        <div className="mt-4 pt-3 border-t border-[#D1D9E6]/40 flex flex-col gap-0.5">
+          <span className="text-sm font-semibold text-[#3D4852]">Requires attention soon</span>
+          <span className="text-xs font-medium text-[#6B7280]">💧 Water &amp; Lift issues</span>
         </div>
       </div>
 
       {/* MEDIUM Card */}
       <div
         onClick={() => onSelectPriority?.('MEDIUM')}
-        className={`relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md transition-all cursor-pointer ${
-          activeFilter === 'MEDIUM' ? 'ring-2 ring-surface-tint' : ''
+        className={`neu-card p-6 cursor-pointer flex flex-col justify-between group ${
+          activeFilter === 'MEDIUM' ? 'neu-pressed ring-2 ring-[#6C63FF] ring-offset-4 ring-offset-[#E0E5EC]' : ''
         }`}
       >
-        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-surface-tint"></div>
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-surface-container-high text-on-surface">
-              <span className="w-1.5 h-1.5 rounded-full bg-surface-tint"></span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold neu-inset-sm text-[#6C63FF]">
+              <span className="w-2 h-2 rounded-full bg-[#6C63FF]"></span>
               MEDIUM
             </span>
-            <div className="font-headline-xl text-headline-xl text-on-surface tabular-nums">{medium}</div>
+            <div className="text-4xl font-extrabold text-[#3D4852] font-display tabular-nums tracking-tight mt-2">
+              {medium}
+            </div>
           </div>
-          <div className="w-9 h-9 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
-            <span className="material-symbols-outlined text-[20px]">schedule</span>
+          {/* Nested Inset Deep Icon Well */}
+          <div className="w-12 h-12 rounded-2xl neu-inset-deep flex items-center justify-center text-[#6C63FF] group-hover:scale-105 transition-transform duration-300">
+            <span className="material-symbols-outlined text-[24px]">schedule</span>
           </div>
         </div>
-        <div className="mt-space-md pt-space-xs flex flex-col gap-0.5">
-          <span className="font-label-md text-label-md text-on-surface">Routine issues</span>
-          <span className="font-body-sm text-body-sm text-on-surface-variant">🚗 Parking &amp; Cleanliness</span>
+
+        <div className="mt-4 pt-3 border-t border-[#D1D9E6]/40 flex flex-col gap-0.5">
+          <span className="text-sm font-semibold text-[#3D4852]">Routine issues</span>
+          <span className="text-xs font-medium text-[#6B7280]">🚗 Parking &amp; Cleanliness</span>
         </div>
       </div>
 
       {/* LOW Card */}
       <div
         onClick={() => onSelectPriority?.('LOW')}
-        className={`relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-lg shadow-sm hover:shadow-md transition-all cursor-pointer ${
-          activeFilter === 'LOW' ? 'ring-2 ring-outline' : ''
+        className={`neu-card p-6 cursor-pointer flex flex-col justify-between group ${
+          activeFilter === 'LOW' ? 'neu-pressed ring-2 ring-[#6B7280] ring-offset-4 ring-offset-[#E0E5EC]' : ''
         }`}
       >
-        <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-outline"></div>
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-surface-container-low text-tertiary">
-              <span className="w-1.5 h-1.5 rounded-full bg-outline"></span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold neu-inset-sm text-[#6B7280]">
+              <span className="w-2 h-2 rounded-full bg-[#A0AEC0]"></span>
               LOW
             </span>
-            <div className="font-headline-xl text-headline-xl text-on-surface tabular-nums">{low}</div>
+            <div className="text-4xl font-extrabold text-[#3D4852] font-display tabular-nums tracking-tight mt-2">
+              {low}
+            </div>
           </div>
-          <div className="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-tertiary">
-            <span className="material-symbols-outlined text-[20px]">assignment_turned_in</span>
+          {/* Nested Inset Deep Icon Well */}
+          <div className="w-12 h-12 rounded-2xl neu-inset-deep flex items-center justify-center text-[#6B7280] group-hover:scale-105 transition-transform duration-300">
+            <span className="material-symbols-outlined text-[24px]">assignment_turned_in</span>
           </div>
         </div>
-        <div className="mt-space-md pt-space-xs flex flex-col gap-0.5">
-          <span className="font-label-md text-label-md text-on-surface">Can be handled later</span>
-          <span className="font-body-sm text-body-sm text-on-surface-variant">💡 Common light bulbs, etc.</span>
+
+        <div className="mt-4 pt-3 border-t border-[#D1D9E6]/40 flex flex-col gap-0.5">
+          <span className="text-sm font-semibold text-[#3D4852]">Can be handled later</span>
+          <span className="text-xs font-medium text-[#6B7280]">💡 Lighting, garbage, etc.</span>
         </div>
       </div>
     </div>

@@ -9,25 +9,25 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
   switch (status) {
     case 'OPEN':
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-medium">
+        <span className="inline-flex items-center px-3 py-1 rounded-full neu-flat-sm text-[#3D4852] text-xs font-semibold">
           OPEN
         </span>
       );
     case 'IN_PROGRESS':
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm font-semibold">
+        <span className="inline-flex items-center px-3 py-1 rounded-full neu-flat-sm text-[#6C63FF] text-xs font-bold">
           IN PROGRESS
         </span>
       );
     case 'RESOLVED':
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container-highest text-primary font-label-sm text-label-sm font-semibold">
+        <span className="inline-flex items-center px-3 py-1 rounded-full neu-flat-sm text-[#38B2AC] text-xs font-bold">
           RESOLVED
         </span>
       );
     case 'CLOSED':
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-outline font-label-sm text-label-sm">
+        <span className="inline-flex items-center px-3 py-1 rounded-full neu-inset-sm text-[#6B7280] text-xs font-medium">
           CLOSED
         </span>
       );

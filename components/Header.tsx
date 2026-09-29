@@ -20,44 +20,44 @@ export const Header: React.FC = () => {
   }, []);
 
   return (
-    <header className="fixed top-0 left-64 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-md border-b border-outline-variant/40 z-40 px-gutter-lg flex items-center justify-between">
-      <div className="flex items-center gap-space-lg">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
-            <span className="material-symbols-outlined text-[18px]">domain</span>
+    <header className="fixed top-0 left-64 right-0 h-18 bg-[#E0E5EC] z-40 px-8 flex items-center justify-between [box-shadow:0_6px_16px_rgb(163,177,198,0.35)]">
+      <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl neu-inset-deep flex items-center justify-center text-[#6C63FF]">
+            <span className="material-symbols-outlined text-[20px]">domain</span>
           </div>
-          <span className="font-headline-sm text-sm text-on-surface font-semibold tracking-tight">
+          <span className="font-display font-bold text-sm text-[#3D4852] tracking-tight">
             Green Valley RWA
           </span>
         </div>
 
-        <div className="h-4 w-px bg-outline-variant/50"></div>
+        <div className="h-5 w-[2px] neu-inset-sm rounded-full"></div>
 
-        <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-on-surface-variant text-[18px]">calendar_today</span>
-          <span className="font-body-sm text-body-sm text-on-surface-variant font-medium">{currentDate}</span>
+        <div className="flex items-center gap-2 text-xs font-medium text-[#6B7280]">
+          <span className="material-symbols-outlined text-[18px]">calendar_today</span>
+          <span>{currentDate}</span>
         </div>
       </div>
 
-      <div className="flex items-center gap-space-lg">
+      <div className="flex items-center gap-5">
         {/* AI Triage Active Pill */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-low border border-outline-variant/40 text-on-surface-variant font-label-sm text-label-sm">
-          <span className="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full neu-inset-sm text-xs font-semibold text-[#3D4852]">
+          <span className="w-2 h-2 rounded-full bg-[#38B2AC] animate-pulse"></span>
           <span>AI Triage Active</span>
         </div>
 
-        {/* Resident Portal link */}
+        {/* Resident Portal link button */}
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary hover:text-primary-container transition-colors py-1 px-2.5 rounded-lg hover:bg-surface-container-low"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl neu-btn text-xs font-bold text-[#6C63FF] hover:text-[#8B84FF] transition-all"
         >
           <span className="material-symbols-outlined text-[18px]">open_in_new</span>
           <span>Resident Portal</span>
         </Link>
 
         {/* User avatar */}
-        <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary">
-          <span className="material-symbols-outlined text-[18px]">person</span>
+        <div className="w-10 h-10 rounded-2xl neu-inset-deep flex items-center justify-center text-[#6C63FF]">
+          <span className="material-symbols-outlined text-[20px]">person</span>
         </div>
       </div>
     </header>
