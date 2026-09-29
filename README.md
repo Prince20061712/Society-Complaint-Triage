@@ -334,6 +334,24 @@ AI output:
 
 The committee immediately sees the complaint at the top of the urgent queue.
 
+## Demo Credentials (Competition)
+
+The application features a secure, role-based login system for judges and demonstrators:
+
+| Role | Username / Email | Password | Destination |
+|---|---|---|---|
+| **Resident** | `resident@greenvalley.demo` | `Resident@123` | Resident Portal (`/`) |
+| **Committee** | `committee@greenvalley.demo` | `Committee@123` | Committee Dashboard (`/dashboard`) |
+
+- **One-touch autofill:** Click `[ Resident ]` or `[ Committee ]` cards on `/login` to populate credentials.
+- **Serverless Authentication:** Uses HTTP-only cookie sessions signed via Web Crypto HMAC-SHA256.
+
+## Database & Architecture
+
+- **Database:** Neon Serverless PostgreSQL (`@neondatabase/serverless`)
+- **Connection Variable:** `DATABASE_URL` / `POSTGRES_URL`
+- **Fallback:** In-memory store automatically active if no database is connected.
+
 ## Design Principle
 
 The product is intentionally focused on one workflow:
