@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const wing = searchParams.get('wing') || undefined;
     const search = searchParams.get('search') || undefined;
 
-    const complaints = getAllComplaints({ status, priority, category, wing, search });
+    const complaints = await getAllComplaints({ status, priority, category, wing, search });
 
     return NextResponse.json({
       success: true,
@@ -33,9 +33,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: validation.error }, { status: 400 });
     }
 
-    const allExisting = getAllComplaints();
+    const allExisting = await getAllComplaints();
     const triagedData = await processComplaintTriage(validation.cleaned, allExisting);
-    const saved = saveComplaint(triagedData);
+    const saved = await saveComplaint(triagedData);
 
     return NextResponse.json(
       {
@@ -50,9 +50,20 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
   try {
-    const resetList = resetDatabaseToDemoData();
+    const authHeader = request.headers.get('x-admin-key') || request.headers.get('authorization');
+    const adminSecret = process.env.ADMIN_SECRET;
+
+    // In production on Vercel, guard against unrestricted public resets
+    if (process.env.NODE_ENV === 'production' && (!adminSecret || authHeader !== `Bearer ${adminSecret}`)) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Demo database reset is restricted in production.' },
+        { status: 403 }
+      );
+    }
+
+    const resetList = await resetDatabaseToDemoData();
     return NextResponse.json({
       success: true,
       message: 'Complaints database reset to curated demo dataset',

@@ -1,12 +1,13 @@
-import { Complaint, ComplaintPriority, ComplaintStatus, DashboardStatsData } from '@/types/complaint';
+import { Complaint, ComplaintCategory, ComplaintLanguage, ComplaintPriority, ComplaintStatus, DashboardStatsData } from '@/types/complaint';
+import { neon } from '@neondatabase/serverless';
 
-// Global in-memory cache preserved across Next.js dev server hot-reloads
+// Global in-memory cache preserved across Next.js dev server hot-reloads (fallback when no DATABASE_URL)
 declare global {
   var __societyComplaintsDb: Complaint[] | undefined;
   var __societyNextTicketId: number | undefined;
 }
 
-const INITIAL_COMPLAINTS: Complaint[] = [
+export const INITIAL_COMPLAINTS: Complaint[] = [
   {
     id: 'sc-1024',
     ticketNumber: 'SC-1024',
@@ -282,21 +283,142 @@ const INITIAL_COMPLAINTS: Complaint[] = [
   },
 ];
 
-function getStore(): Complaint[] {
-  if (!global.__societyComplaintsDb) {
-    global.__societyComplaintsDb = [...INITIAL_COMPLAINTS];
-  }
-  return global.__societyComplaintsDb;
+function getDatabaseUrl(): string | undefined {
+  return process.env.DATABASE_URL || process.env.POSTGRES_URL;
 }
 
-export function getAllComplaints(filters?: {
+function getNeonClient() {
+  const url = getDatabaseUrl();
+  if (!url) return null;
+  return neon(url);
+}
+
+let isTableInitialized = false;
+
+export async function ensureTableExists(): Promise<void> {
+  if (isTableInitialized) return;
+  const sql = getNeonClient();
+  if (!sql) return;
+
+  try {
+    await sql`
+      CREATE TABLE IF NOT EXISTS complaints (
+        id TEXT PRIMARY KEY,
+        ticket_number TEXT NOT NULL,
+        resident_name TEXT NOT NULL,
+        flat_number TEXT NOT NULL,
+        wing TEXT NOT NULL,
+        raw_message TEXT NOT NULL,
+        title TEXT NOT NULL,
+        summary TEXT NOT NULL,
+        category TEXT NOT NULL,
+        priority TEXT NOT NULL,
+        ai_priority TEXT,
+        committee_priority TEXT,
+        status TEXT NOT NULL DEFAULT 'OPEN',
+        language TEXT NOT NULL DEFAULT 'ENGLISH',
+        confidence NUMERIC NOT NULL DEFAULT 0.95,
+        ai_reasoning TEXT,
+        processing_mode TEXT DEFAULT 'GROQ',
+        possible_duplicate_id TEXT,
+        possible_duplicate_ticket TEXT,
+        duplicate_reason TEXT,
+        vendor_alerted TEXT,
+        vendor_phone TEXT,
+        notes JSONB DEFAULT '[]'::jsonb,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      );
+    `;
+
+    // Check if table is empty; if so, populate initial demo complaints once
+    const countRes = await sql`SELECT COUNT(*)::int as count FROM complaints`;
+    if (countRes[0]?.count === 0) {
+      for (const c of INITIAL_COMPLAINTS) {
+        await sql`
+          INSERT INTO complaints (
+            id, ticket_number, resident_name, flat_number, wing, raw_message,
+            title, summary, category, priority, ai_priority, committee_priority,
+            status, language, confidence, ai_reasoning, processing_mode,
+            possible_duplicate_id, possible_duplicate_ticket, duplicate_reason,
+            vendor_alerted, vendor_phone, notes, created_at, updated_at
+          ) VALUES (
+            ${c.id}, ${c.ticketNumber}, ${c.residentName}, ${c.flatNumber}, ${c.wing}, ${c.rawMessage},
+            ${c.title}, ${c.summary}, ${c.category}, ${c.priority}, ${c.aiPriority || c.priority}, ${c.committeePriority || null},
+            ${c.status}, ${c.language}, ${c.confidence}, ${c.aiReasoning || null}, ${c.processingMode || 'GROQ'},
+            ${c.possibleDuplicateId || null}, ${c.possibleDuplicateTicket || null}, ${c.duplicateReason || null},
+            ${c.vendorAlerted || null}, ${c.vendorPhone || null}, ${JSON.stringify(c.notes || [])}, ${c.createdAt}, ${c.updatedAt}
+          ) ON CONFLICT (id) DO NOTHING;
+        `;
+      }
+    }
+
+    isTableInitialized = true;
+  } catch (err) {
+    console.warn('[DB] Failed to ensure Postgres table:', err);
+  }
+}
+
+function mapRowToComplaint(row: any): Complaint {
+  return {
+    id: row.id,
+    ticketNumber: row.ticket_number,
+    residentName: row.resident_name,
+    flatNumber: row.flat_number,
+    wing: row.wing,
+    rawMessage: row.raw_message,
+    title: row.title,
+    summary: row.summary,
+    category: row.category as ComplaintCategory,
+    priority: row.priority as ComplaintPriority,
+    aiPriority: (row.ai_priority as ComplaintPriority) || (row.priority as ComplaintPriority),
+    committeePriority: row.committee_priority as ComplaintPriority | undefined,
+    status: row.status as ComplaintStatus,
+    language: (row.language as ComplaintLanguage) || 'ENGLISH',
+    confidence: Number(row.confidence) || 0.95,
+    aiReasoning: row.ai_reasoning || undefined,
+    processingMode: (row.processing_mode as 'GROQ' | 'LOCAL_FALLBACK') || 'GROQ',
+    possibleDuplicateId: row.possible_duplicate_id || undefined,
+    possibleDuplicateTicket: row.possible_duplicate_ticket || undefined,
+    duplicateReason: row.duplicate_reason || undefined,
+    vendorAlerted: row.vendor_alerted || undefined,
+    vendorPhone: row.vendor_phone || undefined,
+    notes: Array.isArray(row.notes) ? row.notes : typeof row.notes === 'string' ? JSON.parse(row.notes) : [],
+    createdAt: typeof row.created_at === 'string' ? row.created_at : new Date(row.created_at).toISOString(),
+    updatedAt: typeof row.updated_at === 'string' ? row.updated_at : new Date(row.updated_at).toISOString(),
+  };
+}
+
+function getMemoryStore(): Complaint[] {
+  if (!global.__societyComplaintsDb) {
+    global.__societyComplaintsDb = JSON.parse(JSON.stringify(INITIAL_COMPLAINTS));
+  }
+  return global.__societyComplaintsDb as Complaint[];
+}
+
+export async function getAllComplaints(filters?: {
   status?: string;
   priority?: string;
   category?: string;
   wing?: string;
   search?: string;
-}): Complaint[] {
-  let list = [...getStore()];
+}): Promise<Complaint[]> {
+  const sql = getNeonClient();
+
+  let list: Complaint[] = [];
+
+  if (sql) {
+    try {
+      await ensureTableExists();
+      const rows = await sql`SELECT * FROM complaints ORDER BY created_at DESC`;
+      list = rows.map(mapRowToComplaint);
+    } catch (e) {
+      console.warn('[DB] Postgres query failed, falling back to memory store:', e);
+      list = [...getMemoryStore()];
+    }
+  } else {
+    list = [...getMemoryStore()];
+  }
 
   if (filters?.status && filters.status !== 'ALL') {
     list = list.filter((c) => c.status.toUpperCase() === filters.status?.toUpperCase());
@@ -344,17 +466,88 @@ export function getAllComplaints(filters?: {
   return list;
 }
 
-export function getComplaintById(id: string): Complaint | undefined {
-  const store = getStore();
+export async function getComplaintById(id: string): Promise<Complaint | undefined> {
+  const sql = getNeonClient();
+
+  if (sql) {
+    try {
+      await ensureTableExists();
+      const normalized = id.toLowerCase();
+      const rows = await sql`
+        SELECT * FROM complaints 
+        WHERE LOWER(id) = ${normalized} OR LOWER(ticket_number) = ${normalized} 
+        LIMIT 1
+      `;
+      if (rows.length > 0) {
+        return mapRowToComplaint(rows[0]);
+      }
+      return undefined;
+    } catch (e) {
+      console.warn('[DB] getComplaintById failed, using memory store:', e);
+    }
+  }
+
+  const store = getMemoryStore();
   const normalized = id.toLowerCase();
   return store.find((c) => c.id.toLowerCase() === normalized || c.ticketNumber.toLowerCase() === normalized);
 }
 
-export function saveComplaint(data: Omit<Complaint, 'id' | 'ticketNumber' | 'createdAt' | 'updatedAt'>): Complaint {
-  const store = getStore();
-  global.__societyNextTicketId = (global.__societyNextTicketId || 1025) + 1;
-  const ticketNumber = `SC-${global.__societyNextTicketId}`;
-  const id = `sc-${global.__societyNextTicketId}`;
+export async function saveComplaint(
+  data: Omit<Complaint, 'id' | 'ticketNumber' | 'createdAt' | 'updatedAt'>
+): Promise<Complaint> {
+  const sql = getNeonClient();
+
+  if (sql) {
+    try {
+      await ensureTableExists();
+      const rows = await sql`SELECT ticket_number FROM complaints ORDER BY created_at DESC LIMIT 100`;
+      let maxTicketNum = 1024;
+      for (const r of rows) {
+        const match = String(r.ticket_number || '').match(/\d+/);
+        if (match) {
+          const num = parseInt(match[0], 10);
+          if (num > maxTicketNum) maxTicketNum = num;
+        }
+      }
+      const nextId = maxTicketNum + 1;
+      const id = `sc-${nextId}`;
+      const ticketNumber = `SC-${nextId}`;
+      const now = new Date().toISOString();
+
+      await sql`
+        INSERT INTO complaints (
+          id, ticket_number, resident_name, flat_number, wing, raw_message,
+          title, summary, category, priority, ai_priority, committee_priority,
+          status, language, confidence, ai_reasoning, processing_mode,
+          possible_duplicate_id, possible_duplicate_ticket, duplicate_reason,
+          vendor_alerted, vendor_phone, notes, created_at, updated_at
+        ) VALUES (
+          ${id}, ${ticketNumber}, ${data.residentName}, ${data.flatNumber}, ${data.wing}, ${data.rawMessage},
+          ${data.title}, ${data.summary}, ${data.category}, ${data.priority}, ${data.aiPriority || data.priority}, ${data.committeePriority || null},
+          ${data.status || 'OPEN'}, ${data.language || 'ENGLISH'}, ${data.confidence || 0.95}, ${data.aiReasoning || null}, ${data.processingMode || 'GROQ'},
+          ${data.possibleDuplicateId || null}, ${data.possibleDuplicateTicket || null}, ${data.duplicateReason || null},
+          ${data.vendorAlerted || null}, ${data.vendorPhone || null}, ${JSON.stringify(data.notes || [])}, ${now}, ${now}
+        )
+      `;
+
+      return {
+        ...data,
+        id,
+        ticketNumber,
+        createdAt: now,
+        updatedAt: now,
+      };
+    } catch (e) {
+      console.warn('[DB] saveComplaint to Postgres failed, saving to memory store:', e);
+    }
+  }
+
+  const store = getMemoryStore();
+  const nextTicketId = (global.__societyNextTicketId || 1024) + 1;
+  global.__societyNextTicketId = nextTicketId;
+
+  const id = `sc-${nextTicketId}`;
+  const ticketNumber = `SC-${nextTicketId}`;
   const now = new Date().toISOString();
 
   const newComplaint: Complaint = {
@@ -369,11 +562,67 @@ export function saveComplaint(data: Omit<Complaint, 'id' | 'ticketNumber' | 'cre
   return newComplaint;
 }
 
-export function updateComplaint(
+export async function updateComplaint(
   id: string,
   updates: { status?: ComplaintStatus; priority?: ComplaintPriority; note?: string; duplicateResolved?: boolean }
-): Complaint | null {
-  const store = getStore();
+): Promise<Complaint | null> {
+  const sql = getNeonClient();
+
+  if (sql) {
+    try {
+      await ensureTableExists();
+      const current = await getComplaintById(id);
+      if (!current) return null;
+
+      const now = new Date().toISOString();
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      const updatedNotes = [...(current.notes || [])];
+      if (updates.note) {
+        updatedNotes.push(`[${timeStr}] ${updates.note}`);
+      }
+      if (updates.status && updates.status !== current.status) {
+        updatedNotes.push(`[${timeStr}] Status changed from ${current.status} to ${updates.status}`);
+      }
+      const hasPriorityChange = updates.priority && updates.priority !== current.priority;
+      if (hasPriorityChange) {
+        updatedNotes.push(`[${timeStr}] Committee override priority from ${current.priority} to ${updates.priority}`);
+      }
+
+      const newStatus = updates.status || current.status;
+      const newPriority = updates.priority || current.priority;
+      const newCommitteePriority = hasPriorityChange ? updates.priority : current.committeePriority;
+      const newPossibleDupId = updates.duplicateResolved ? null : (current.possibleDuplicateId || null);
+      const newPossibleDupTicket = updates.duplicateResolved ? null : (current.possibleDuplicateTicket || null);
+
+      await sql`
+        UPDATE complaints SET
+          status = ${newStatus},
+          priority = ${newPriority},
+          committee_priority = ${newCommitteePriority || null},
+          notes = ${JSON.stringify(updatedNotes)},
+          possible_duplicate_id = ${newPossibleDupId},
+          possible_duplicate_ticket = ${newPossibleDupTicket},
+          updated_at = ${now}
+        WHERE LOWER(id) = LOWER(${current.id})
+      `;
+
+      return {
+        ...current,
+        status: newStatus,
+        priority: newPriority,
+        committeePriority: newCommitteePriority,
+        notes: updatedNotes,
+        possibleDuplicateId: newPossibleDupId || undefined,
+        possibleDuplicateTicket: newPossibleDupTicket || undefined,
+        updatedAt: now,
+      };
+    } catch (e) {
+      console.warn('[DB] updateComplaint in Postgres failed, updating memory store:', e);
+    }
+  }
+
+  const store = getMemoryStore();
   const normalized = id.toLowerCase();
   const index = store.findIndex((c) => c.id.toLowerCase() === normalized || c.ticketNumber.toLowerCase() === normalized);
 
@@ -413,16 +662,45 @@ export function updateComplaint(
   return updatedComplaint;
 }
 
-export function resetDatabaseToDemoData(): Complaint[] {
+export async function resetDatabaseToDemoData(): Promise<Complaint[]> {
+  const sql = getNeonClient();
+
+  if (sql) {
+    try {
+      await ensureTableExists();
+      await sql`DELETE FROM complaints`;
+      for (const c of INITIAL_COMPLAINTS) {
+        await sql`
+          INSERT INTO complaints (
+            id, ticket_number, resident_name, flat_number, wing, raw_message,
+            title, summary, category, priority, ai_priority, committee_priority,
+            status, language, confidence, ai_reasoning, processing_mode,
+            possible_duplicate_id, possible_duplicate_ticket, duplicate_reason,
+            vendor_alerted, vendor_phone, notes, created_at, updated_at
+          ) VALUES (
+            ${c.id}, ${c.ticketNumber}, ${c.residentName}, ${c.flatNumber}, ${c.wing}, ${c.rawMessage},
+            ${c.title}, ${c.summary}, ${c.category}, ${c.priority}, ${c.aiPriority || c.priority}, ${c.committeePriority || null},
+            ${c.status}, ${c.language}, ${c.confidence}, ${c.aiReasoning || null}, ${c.processingMode || 'GROQ'},
+            ${c.possibleDuplicateId || null}, ${c.possibleDuplicateTicket || null}, ${c.duplicateReason || null},
+            ${c.vendorAlerted || null}, ${c.vendorPhone || null}, ${JSON.stringify(c.notes || [])}, ${c.createdAt}, ${c.updatedAt}
+          );
+        `;
+      }
+      return [...INITIAL_COMPLAINTS];
+    } catch (e) {
+      console.warn('[DB] resetDatabaseToDemoData failed, resetting memory store:', e);
+    }
+  }
+
   global.__societyComplaintsDb = JSON.parse(JSON.stringify(INITIAL_COMPLAINTS));
   global.__societyNextTicketId = 1025;
   return global.__societyComplaintsDb as Complaint[];
 }
 
-export function getDashboardStats(): DashboardStatsData {
-  const store = getStore();
-  const active = store.filter((c) => c.status === 'OPEN' || c.status === 'IN_PROGRESS');
-  const resolved = store.filter((c) => c.status === 'RESOLVED');
+export async function getDashboardStats(): Promise<DashboardStatsData> {
+  const all = await getAllComplaints();
+  const active = all.filter((c) => c.status === 'OPEN' || c.status === 'IN_PROGRESS');
+  const resolved = all.filter((c) => c.status === 'RESOLVED');
 
   return {
     totalActive: active.length,
@@ -430,8 +708,8 @@ export function getDashboardStats(): DashboardStatsData {
     high: active.filter((c) => c.priority === 'HIGH').length,
     medium: active.filter((c) => c.priority === 'MEDIUM').length,
     low: active.filter((c) => c.priority === 'LOW').length,
-    open: store.filter((c) => c.status === 'OPEN').length,
-    inProgress: store.filter((c) => c.status === 'IN_PROGRESS').length,
+    open: all.filter((c) => c.status === 'OPEN').length,
+    inProgress: all.filter((c) => c.status === 'IN_PROGRESS').length,
     resolved: resolved.length,
   };
 }

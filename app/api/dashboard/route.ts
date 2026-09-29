@@ -3,7 +3,7 @@ import { getDashboardStats } from '@/lib/db';
 
 export async function GET() {
   try {
-    const stats = getDashboardStats();
+    const stats = await getDashboardStats();
     const isGroqConfigured = Boolean(process.env.GROQ_API_KEY);
     return NextResponse.json({
       success: true,
