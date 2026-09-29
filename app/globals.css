@@ -18,24 +18,45 @@
   box-sizing: border-box;
 }
 
-html, body {
+html {
   margin: 0;
   padding: 0;
   background-color: #E0E5EC;
   color: #3D4852;
   font-family: 'DM Sans', sans-serif;
-  scroll-behavior: smooth;
-  overflow-x: hidden;
-  max-width: 100vw;
+  overflow-x: clip;
   width: 100%;
 }
 
 body {
-  overscroll-behavior: none;
+  margin: 0;
+  padding: 0;
+  background-color: #E0E5EC;
+  color: #3D4852;
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: clip;
+  min-height: 100vh;
+  width: 100%;
 }
 
+/* Subtle modern scrollbars matching Neumorphism aesthetic */
 ::-webkit-scrollbar {
-  display: none;
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #E0E5EC;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #B8C2CC;
+  border-radius: 9999px;
+  border: 2px solid #E0E5EC;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9FAEC0;
 }
 
 /* Material Symbols font style guarantee */

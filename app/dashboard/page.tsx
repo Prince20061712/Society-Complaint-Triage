@@ -95,7 +95,7 @@ export default function DashboardCommandCenterPage() {
 
   return (
     <AppShell activeCount={activeCount}>
-      <main className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 max-w-[1440px] mx-auto w-full min-w-0 overflow-x-hidden">
+      <main className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 max-w-[1440px] mx-auto w-full min-w-0">
         {/* Alert notification banner */}
         {alertNotice && (
           <div className="p-3.5 sm:p-4 rounded-2xl neu-flat text-[#3D4852] flex items-center justify-between transition-all animate-in fade-in">

@@ -32,7 +32,7 @@ export default function ResidentPortalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#E0E5EC] text-[#3D4852] font-body antialiased w-full max-w-full overflow-x-hidden">
+    <div className="min-h-screen bg-[#E0E5EC] text-[#3D4852] font-body antialiased w-full max-w-full overflow-x-clip">
       {/* Top Soft Header */}
       <header className="h-16 sm:h-18 bg-[#E0E5EC] px-4 sm:px-8 flex items-center justify-between sticky top-0 z-40 [box-shadow:0_6px_16px_rgb(163,177,198,0.35)] w-full">
         <div className="flex items-center gap-3 sm:gap-4 min-w-0">
@@ -62,7 +62,7 @@ export default function ResidentPortalPage() {
       </header>
 
       {/* Hero section */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-12 space-y-8 sm:space-y-10 w-full min-w-0 overflow-x-hidden">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-12 space-y-8 sm:space-y-10 w-full min-w-0">
         <div className="text-center space-y-2.5 sm:space-y-3">
           <span className="inline-block px-3.5 sm:px-4 py-1 sm:py-1.5 rounded-full neu-inset-sm text-[11px] sm:text-xs font-bold text-[#6C63FF]">
             COMMUNITY FIRST RESIDENT DESK

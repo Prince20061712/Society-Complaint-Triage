@@ -49,7 +49,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, activeCount = 26 }
   const isResident = pathname === '/';
 
   return (
-    <div className="bg-[#E0E5EC] min-h-screen text-[#3D4852] font-body w-full max-w-full overflow-x-hidden">
+    <div className="bg-[#E0E5EC] min-h-screen text-[#3D4852] font-body w-full max-w-full overflow-x-clip">
       {/* ================= DESKTOP FIXED SIDEBAR (>= 1024px) ================= */}
       <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-64 bg-[#E0E5EC] z-50 flex-col justify-between py-6 px-5 [box-shadow:6px_0_16px_rgb(163,177,198,0.5)]">
         <div className="flex flex-col gap-6">
@@ -301,7 +301,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, activeCount = 26 }
       </header>
 
       {/* ================= MAIN CONTENT WRAPPER ================= */}
-      <div className="lg:pl-64 pl-0 w-full min-w-0 max-w-full overflow-x-hidden pt-16 sm:pt-18">
+      <div className="lg:pl-64 pl-0 w-full min-w-0 max-w-full pt-16 sm:pt-18">
         {children}
       </div>
     </div>
