@@ -90,8 +90,10 @@ export const ComplaintForm: React.FC<ComplaintFormProps> = ({ onSubmitted }) => 
               <span className="material-symbols-outlined text-[26px] sm:text-[32px]">task_alt</span>
             </div>
             <div className="min-w-0">
-              <span className="inline-block px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full neu-inset-sm text-[#6C63FF] text-[11px] sm:text-xs font-bold">
-                AI TRIAGED &amp; LOGGED
+              <span className={`inline-block px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full neu-inset-sm text-[11px] sm:text-xs font-bold ${
+                createdTicket.processingMode === 'GROQ' ? 'text-[#38B2AC]' : 'text-[#DD6B20]'
+              }`}>
+                {createdTicket.processingMode === 'GROQ' ? '⚡ GROQ AI TRIAGED & LOGGED' : '⚙️ LOCAL FALLBACK TRIAGED'}
               </span>
               <h2 className="font-display font-extrabold text-lg sm:text-2xl text-[#3D4852] mt-0.5 sm:mt-1 truncate">
                 Ticket Generated
@@ -114,6 +116,12 @@ export const ComplaintForm: React.FC<ComplaintFormProps> = ({ onSubmitted }) => 
               <h4 className="font-display font-bold text-sm sm:text-base text-[#3D4852] break-words">{createdTicket.title}</h4>
               <p className="text-xs sm:text-sm text-[#6B7280] mt-1 leading-relaxed break-words">{createdTicket.summary}</p>
             </div>
+
+            {createdTicket.aiReasoning && (
+              <div className="p-2.5 rounded-xl neu-inset-sm text-xs text-[#6B7280] break-words">
+                <strong className="text-[#3D4852]">AI Rationale:</strong> {createdTicket.aiReasoning}
+              </div>
+            )}
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 pt-3 text-xs text-[#6B7280] border-t border-[#D1D9E6]/40">
               <div>

@@ -25,6 +25,12 @@ export default function DashboardCommandCenterPage() {
   const [isFastTriage, setIsFastTriage] = useState(false);
   const [isZeroUrgentMode, setIsZeroUrgentMode] = useState(false);
   const [alertNotice, setAlertNotice] = useState<string | null>(null);
+  const [aiStatus, setAiStatus] = useState<{ online: boolean; label: string; sublabel: string; provider: string }>({
+    online: true,
+    label: 'AI Triage Online',
+    sublabel: 'Powered by Groq',
+    provider: 'Groq',
+  });
 
   const fetchDashboardData = async () => {
     try {
@@ -45,6 +51,9 @@ export default function DashboardCommandCenterPage() {
         const data = await resStats.json();
         if (data.stats) {
           setStats(data.stats);
+        }
+        if (data.aiStatus) {
+          setAiStatus(data.aiStatus);
         }
       }
     } catch (err) {
@@ -89,7 +98,7 @@ export default function DashboardCommandCenterPage() {
   const lowCount = complaints.filter((c) => c.priority === 'LOW' && (c.status === 'OPEN' || c.status === 'IN_PROGRESS')).length;
 
   const handleBroadcast = () => {
-    setAlertNotice('WhatsApp alert broadcast queued to Wing A residents regarding water pump repair.');
+    setAlertNotice('Demo Simulation: WhatsApp alert broadcast queued to Wing A residents regarding water pump repair.');
     setTimeout(() => setAlertNotice(null), 5000);
   };
 
@@ -131,10 +140,10 @@ export default function DashboardCommandCenterPage() {
             {/* AI Engine Status Pill */}
             <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-2xl neu-inset-sm text-xs">
               <span className="material-symbols-outlined text-[16px] sm:text-[18px] text-[#6C63FF]">auto_awesome</span>
-              <span className="font-bold text-[#3D4852]">AI Triage: Online</span>
-              <span className="inline-block w-2 h-2 rounded-full bg-[#38B2AC]"></span>
+              <span className="font-bold text-[#3D4852]">{aiStatus.label}</span>
+              <span className={`inline-block w-2 h-2 rounded-full ${aiStatus.online ? 'bg-[#38B2AC] animate-pulse' : 'bg-[#DD6B20]'}`}></span>
               <span className="text-[#6B7280] hidden sm:inline">
-                {stats.triagedThisHour} triaged this hour
+                {aiStatus.sublabel}
               </span>
             </div>
 
@@ -170,47 +179,6 @@ export default function DashboardCommandCenterPage() {
           low={lowCount}
         />
 
-        {/* Triage Velocity & SLA Performance Banner */}
-        <div className="neu-card p-4 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl neu-inset-deep text-[#6C63FF] flex items-center justify-center shrink-0">
-              <span className="material-symbols-outlined text-[22px] sm:text-[26px]">smart_toy</span>
-            </div>
-            <div>
-              <span className="text-sm sm:text-base font-bold font-display text-[#3D4852] block">
-                Triage Velocity: {stats.velocityPercent}% classified under 45 seconds
-              </span>
-              <p className="text-xs text-[#6B7280] mt-0.5">
-                Automatic vendor dispatch active for Otis Elevators, Mahavir Plumbing &amp; Security Desk
-              </p>
-            </div>
-          </div>
-
-          {/* Miniature SLA sparkline */}
-          <div className="flex items-center gap-3 sm:gap-4 shrink-0 self-end md:self-auto">
-            <div className="text-right">
-              <div className="text-[10px] sm:text-[11px] font-bold text-[#6B7280] uppercase tracking-wider">
-                Avg SLA Response
-              </div>
-              <div className="text-base sm:text-lg font-extrabold text-[#3D4852] font-display tabular-nums">
-                {stats.avgSlaResponse}
-              </div>
-            </div>
-            <div className="p-1.5 sm:p-2 rounded-2xl neu-inset-sm flex items-center justify-center">
-              <svg className="w-20 sm:w-24 h-6 sm:h-7 text-[#6C63FF] overflow-visible" fill="none" viewBox="0 0 100 30">
-                <path
-                  d="M 0,22 Q 20,28 35,15 T 70,12 T 100,5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeWidth="2.5"
-                ></path>
-                <circle className="fill-[#6C63FF]" cx="100" cy="5" r="3.5"></circle>
-              </svg>
-            </div>
-          </div>
-        </div>
-
         {/* Concise 'Needs Attention Right Now' Section */}
         <div className="space-y-4 sm:space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
@@ -224,35 +192,34 @@ export default function DashboardCommandCenterPage() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-              {/* Triage Mode Toggle */}
+              {/* Triage Mode Toggle (Clearly marked demo) */}
               <button
                 onClick={() => setIsFastTriage(!isFastTriage)}
-                className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl transition-all text-xs font-bold cursor-pointer min-h-[44px] ${
-                  isFastTriage
+                className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl transition-all text-xs font-bold cursor-pointer min-h-[44px] ${isFastTriage
                     ? 'neu-btn-primary'
                     : 'neu-btn text-[#6C63FF]'
-                }`}
+                  }`}
                 type="button"
+                title="Demo simulation toggle for fast triage"
               >
                 <span className="material-symbols-outlined text-[16px] sm:text-[18px]">
                   {isFastTriage ? 'done_all' : 'bolt'}
                 </span>
-                <span>{isFastTriage ? 'Fast-Triage Active' : 'Triage Mode'}</span>
+                <span>{isFastTriage ? 'Fast-Triage (Demo)' : 'Triage Mode: Review'}</span>
               </button>
 
-              {/* Demo Zero Urgent Button */}
+              {/* Demo Zero Urgent Button (Clearly marked demo) */}
               <button
                 onClick={() => setIsZeroUrgentMode(!isZeroUrgentMode)}
-                className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer min-h-[44px] ${
-                  isZeroUrgentMode
+                className={`inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer min-h-[44px] ${isZeroUrgentMode
                     ? 'neu-pressed text-[#38B2AC]'
                     : 'neu-btn text-[#3D4852]'
-                }`}
-                title="Preview zero urgent state"
+                  }`}
+                title="Simulated preview of zero-urgent state"
                 type="button"
               >
                 <span className="material-symbols-outlined text-[16px] sm:text-[18px]">celebration</span>
-                <span>{isZeroUrgentMode ? 'Exit Demo' : 'Demo Zero'}</span>
+                <span>{isZeroUrgentMode ? 'Exit Demo Preview' : 'Demo Preview: Zero-Urgent'}</span>
               </button>
 
               {/* View All Complaints link */}

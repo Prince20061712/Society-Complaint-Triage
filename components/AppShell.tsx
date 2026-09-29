@@ -13,6 +13,15 @@ export const AppShell: React.FC<AppShellProps> = ({ children, activeCount = 26 }
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState('Tuesday, 24 Oct');
+  const [aiStatus, setAiStatus] = useState<{
+    online: boolean;
+    label: string;
+    sublabel: string;
+  }>({
+    online: true,
+    label: 'Groq AI Active',
+    sublabel: 'Groq LLM Active',
+  });
 
   useEffect(() => {
     try {
@@ -25,6 +34,19 @@ export const AppShell: React.FC<AppShellProps> = ({ children, activeCount = 26 }
     } catch (e) {
       // Fallback
     }
+
+    fetch('/api/dashboard')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.aiStatus) {
+          setAiStatus({
+            online: Boolean(data.aiStatus.online),
+            label: data.aiStatus.label || 'Groq AI Active',
+            sublabel: data.aiStatus.sublabel || 'Groq LLM Active',
+          });
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // Close mobile drawer on route change
@@ -280,9 +302,16 @@ export const AppShell: React.FC<AppShellProps> = ({ children, activeCount = 26 }
 
         {/* Right: AI Triage Pill + Resident Portal Link + Avatar */}
         <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-          <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full neu-inset-sm text-xs font-semibold text-[#3D4852]">
-            <span className="w-2 h-2 rounded-full bg-[#38B2AC] animate-pulse"></span>
-            <span>AI Triage Active</span>
+          <div
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full neu-inset-sm text-xs font-semibold text-[#3D4852]"
+            title={aiStatus.sublabel}
+          >
+            <span
+              className={`w-2 h-2 rounded-full ${
+                aiStatus.online ? 'bg-[#38B2AC] animate-pulse' : 'bg-[#ED8936]'
+              }`}
+            ></span>
+            <span>{aiStatus.label}</span>
           </div>
 
           <Link

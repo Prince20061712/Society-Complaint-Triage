@@ -3,9 +3,9 @@ import { Complaint, ComplaintCategory, DuplicateMatch } from '@/types/complaint'
 function normalizeText(text: string): string[] {
   return text
     .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
     .split(/\s+/)
-    .filter((word) => word.length > 2);
+    .filter((word) => word.length >= 2);
 }
 
 export function detectDuplicate(
@@ -29,22 +29,30 @@ export function detectDuplicate(
   let matchReason = '';
 
   for (const c of candidates) {
-    const candidateWords = normalizeText(`${c.title} ${c.summary} ${c.rawMessage}`);
-    let commonCount = 0;
+    const candidateCombinedWords = normalizeText(`${c.title} ${c.summary} ${c.rawMessage}`);
+    const candidateRawWords = normalizeText(c.rawMessage);
 
-    for (const w of candidateWords) {
-      if (newWords.has(w)) {
-        commonCount++;
-      }
+    let commonCombined = 0;
+    for (const w of candidateCombinedWords) {
+      if (newWords.has(w)) commonCombined++;
     }
 
-    const similarity = candidateWords.length > 0 ? (commonCount * 2) / (newWords.size + candidateWords.length) : 0;
+    let commonRaw = 0;
+    for (const w of candidateRawWords) {
+      if (newWords.has(w)) commonRaw++;
+    }
 
-    // Check specific critical keywords: "lift", "pump", "water", "tank", "gate", "parking"
+    const similarityCombined =
+      candidateCombinedWords.length > 0 ? (commonCombined * 2) / (newWords.size + candidateCombinedWords.length) : 0;
+    const similarityRaw =
+      candidateRawWords.length > 0 ? (commonRaw * 2) / (newWords.size + candidateRawWords.length) : 0;
+
+    const baseSimilarity = Math.max(similarityCombined, similarityRaw);
+
     const isSameCategory = c.category === category;
     const sameWing = newText.toLowerCase().includes(c.wing.toLowerCase());
 
-    let finalScore = similarity;
+    let finalScore = baseSimilarity;
     if (isSameCategory) finalScore += 0.25;
     if (sameWing) finalScore += 0.2;
 

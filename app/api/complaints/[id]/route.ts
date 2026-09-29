@@ -23,6 +23,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
     const updated = updateComplaint(id, {
       status: body.status,
+      priority: body.priority,
       note: body.note,
       duplicateResolved: body.duplicateResolved,
     });

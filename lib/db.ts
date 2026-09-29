@@ -1,4 +1,4 @@
-import { Complaint, ComplaintStatus, DashboardStatsData } from '@/types/complaint';
+import { Complaint, ComplaintPriority, ComplaintStatus, DashboardStatsData } from '@/types/complaint';
 
 // Global in-memory cache preserved across Next.js dev server hot-reloads
 declare global {
@@ -270,7 +270,7 @@ export function saveComplaint(data: Omit<Complaint, 'id' | 'ticketNumber' | 'cre
 
 export function updateComplaint(
   id: string,
-  updates: { status?: ComplaintStatus; note?: string; duplicateResolved?: boolean }
+  updates: { status?: ComplaintStatus; priority?: ComplaintPriority; note?: string; duplicateResolved?: boolean }
 ): Complaint | null {
   const store = getStore();
   const normalized = id.toLowerCase();
@@ -280,19 +280,28 @@ export function updateComplaint(
 
   const current = store[index];
   const now = new Date().toISOString();
+  const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   const updatedNotes = [...(current.notes || [])];
   if (updates.note) {
-    updatedNotes.push(`[${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}] ${updates.note}`);
+    updatedNotes.push(`[${timeStr}] ${updates.note}`);
   }
 
   if (updates.status && updates.status !== current.status) {
-    updatedNotes.push(`Status changed from ${current.status} to ${updates.status}`);
+    updatedNotes.push(`[${timeStr}] Status changed from ${current.status} to ${updates.status}`);
+  }
+
+  const hasPriorityChange = updates.priority && updates.priority !== current.priority;
+  if (hasPriorityChange) {
+    updatedNotes.push(`[${timeStr}] Committee override priority from ${current.priority} to ${updates.priority}`);
   }
 
   const updatedComplaint: Complaint = {
     ...current,
     status: updates.status || current.status,
+    priority: updates.priority || current.priority,
+    aiPriority: current.aiPriority || current.priority,
+    committeePriority: hasPriorityChange ? updates.priority : current.committeePriority,
     notes: updatedNotes,
     possibleDuplicateId: updates.duplicateResolved ? undefined : current.possibleDuplicateId,
     possibleDuplicateTicket: updates.duplicateResolved ? undefined : current.possibleDuplicateTicket,
@@ -306,6 +315,7 @@ export function updateComplaint(
 export function getDashboardStats(): DashboardStatsData {
   const store = getStore();
   const active = store.filter((c) => c.status === 'OPEN' || c.status === 'IN_PROGRESS');
+  const resolved = store.filter((c) => c.status === 'RESOLVED');
 
   return {
     totalActive: active.length,
@@ -313,9 +323,9 @@ export function getDashboardStats(): DashboardStatsData {
     high: active.filter((c) => c.priority === 'HIGH').length,
     medium: active.filter((c) => c.priority === 'MEDIUM').length,
     low: active.filter((c) => c.priority === 'LOW').length,
-    resolvedToday: 42,
-    avgSlaResponse: '18m 40s',
-    triagedThisHour: 4,
-    velocityPercent: 94,
+    resolvedToday: resolved.length,
+    avgSlaResponse: active.some((c) => c.priority === 'URGENT') ? 'Urgent Alert' : 'Normal Pace',
+    triagedThisHour: store.length,
+    velocityPercent: 100,
   };
 }

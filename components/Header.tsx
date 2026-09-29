@@ -5,6 +5,15 @@ import Link from 'next/link';
 
 export const Header: React.FC = () => {
   const [currentDate, setCurrentDate] = useState('Tuesday, 24 Oct');
+  const [aiStatus, setAiStatus] = useState<{
+    online: boolean;
+    label: string;
+    sublabel: string;
+  }>({
+    online: true,
+    label: 'Groq AI Active',
+    sublabel: 'Groq LLM Active',
+  });
 
   useEffect(() => {
     try {
@@ -17,6 +26,19 @@ export const Header: React.FC = () => {
     } catch (e) {
       // Fallback
     }
+
+    fetch('/api/dashboard')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.aiStatus) {
+          setAiStatus({
+            online: Boolean(data.aiStatus.online),
+            label: data.aiStatus.label || 'Groq AI Active',
+            sublabel: data.aiStatus.sublabel || 'Groq LLM Active',
+          });
+        }
+      })
+      .catch(() => {});
   }, []);
 
   return (
@@ -41,9 +63,16 @@ export const Header: React.FC = () => {
 
       <div className="flex items-center gap-5">
         {/* AI Triage Active Pill */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full neu-inset-sm text-xs font-semibold text-[#3D4852]">
-          <span className="w-2 h-2 rounded-full bg-[#38B2AC] animate-pulse"></span>
-          <span>AI Triage Active</span>
+        <div
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full neu-inset-sm text-xs font-semibold text-[#3D4852]"
+          title={aiStatus.sublabel}
+        >
+          <span
+            className={`w-2 h-2 rounded-full ${
+              aiStatus.online ? 'bg-[#38B2AC] animate-pulse' : 'bg-[#ED8936]'
+            }`}
+          ></span>
+          <span>{aiStatus.label}</span>
         </div>
 
         {/* Resident Portal link button */}

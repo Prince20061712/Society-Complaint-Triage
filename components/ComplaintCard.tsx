@@ -72,6 +72,16 @@ export const ComplaintCard: React.FC<ComplaintCardProps> = ({ complaint }) => {
               </span>
             )}
 
+            {complaint.processingMode && (
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                complaint.processingMode === 'GROQ'
+                  ? 'neu-flat-sm text-[#38B2AC]'
+                  : 'neu-inset-sm text-[#DD6B20]'
+              }`}>
+                {complaint.processingMode === 'GROQ' ? '⚡ Groq AI' : '⚙️ Fallback'}
+              </span>
+            )}
+
             {/* Duplicate indicator */}
             {complaint.possibleDuplicateTicket && (
               <DuplicateAlert ticketNumber={complaint.possibleDuplicateTicket} reason={complaint.duplicateReason} />

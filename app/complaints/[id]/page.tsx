@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { AppShell } from '@/components/AppShell';
 import { PriorityBadge } from '@/components/PriorityBadge';
 import { StatusBadge } from '@/components/StatusBadge';
-import { Complaint, ComplaintStatus } from '@/types/complaint';
+import { Complaint, ComplaintPriority, ComplaintStatus } from '@/types/complaint';
 
 export default function ComplaintDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -47,6 +47,28 @@ export default function ComplaintDetailPage({ params }: { params: Promise<{ id: 
         const data = await res.json();
         setComplaint(data.complaint);
         setSuccessMsg(`Status updated to ${status}`);
+        setTimeout(() => setSuccessMsg(null), 3000);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleUpdatePriority = async (priority: ComplaintPriority) => {
+    if (!complaint) return;
+    try {
+      setUpdating(true);
+      const res = await fetch(`/api/complaints/${complaint.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priority }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setComplaint(data.complaint);
+        setSuccessMsg(`Priority updated to ${priority}`);
         setTimeout(() => setSuccessMsg(null), 3000);
       }
     } catch (e) {
@@ -220,13 +242,31 @@ export default function ComplaintDetailPage({ params }: { params: Promise<{ id: 
           {/* AI Summary and Raw Message (Stacks vertically on mobile, 2-col on md+) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <div className="neu-inset-sm rounded-2xl p-4 sm:p-6 space-y-2.5 sm:space-y-3">
-              <div className="flex items-center gap-2 text-[#6C63FF]">
-                <span className="material-symbols-outlined text-[18px] sm:text-[20px]">auto_awesome</span>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#3D4852]">
-                  AI Normalized Summary
-                </h3>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-[#6C63FF]">
+                  <span className="material-symbols-outlined text-[18px] sm:text-[20px]">auto_awesome</span>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#3D4852]">
+                    AI Normalized Summary
+                  </h3>
+                </div>
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                  complaint.processingMode === 'GROQ'
+                    ? 'neu-flat-sm text-[#38B2AC]'
+                    : 'neu-inset-sm text-[#DD6B20]'
+                }`}>
+                  {complaint.processingMode === 'GROQ' ? '⚡ Groq AI' : '⚙️ Local Fallback'}
+                </span>
               </div>
-              <p className="text-xs sm:text-sm text-[#3D4852] leading-relaxed break-words">{complaint.summary}</p>
+
+              <p className="text-xs sm:text-sm text-[#3D4852] leading-relaxed break-words font-medium">{complaint.summary}</p>
+
+              {complaint.aiReasoning && (
+                <div className="p-2.5 rounded-xl bg-[#E0E5EC]/60 neu-inset-sm text-xs text-[#3D4852] break-words">
+                  <span className="font-bold text-[#6C63FF] block mb-0.5">AI Rationale:</span>
+                  <span className="text-[#6B7280]">{complaint.aiReasoning}</span>
+                </div>
+              )}
+
               <div className="pt-2.5 sm:pt-3 flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-[#6B7280] border-t border-[#D1D9E6]/40">
                 <span>Language: 🗣️ {complaint.language}</span>
                 <span>•</span>
@@ -249,6 +289,38 @@ export default function ComplaintDetailPage({ params }: { params: Promise<{ id: 
                 <span>•</span>
                 <span>Flat {complaint.flatNumber} ({complaint.wing})</span>
               </div>
+            </div>
+          </div>
+
+          {/* Committee Priority Override */}
+          <div className="p-4 sm:p-6 rounded-2xl neu-card space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#3D4852]">
+                Committee Priority Override
+              </h3>
+              <span className="text-[11px] text-[#6B7280]">
+                Active: <strong className="text-[#3D4852]">{complaint.priority}</strong>
+                {complaint.committeePriority && complaint.aiPriority && complaint.committeePriority !== complaint.aiPriority && (
+                  <span className="text-[#6C63FF] font-semibold ml-1">(Adjusted from AI: {complaint.aiPriority})</span>
+                )}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2 sm:gap-3">
+              {(['URGENT', 'HIGH', 'MEDIUM', 'LOW'] as ComplaintPriority[]).map((pr) => (
+                <button
+                  key={pr}
+                  type="button"
+                  disabled={updating || complaint.priority === pr}
+                  onClick={() => handleUpdatePriority(pr)}
+                  className={`flex-1 sm:flex-none px-4 sm:px-5 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer min-h-[44px] ${
+                    complaint.priority === pr
+                      ? 'neu-pressed text-[#6C63FF] ring-2 ring-[#6C63FF] ring-offset-2 ring-offset-[#E0E5EC]'
+                      : 'neu-btn text-[#3D4852] hover:text-[#6C63FF]'
+                  } disabled:opacity-50`}
+                >
+                  {pr}
+                </button>
+              ))}
             </div>
           </div>
 

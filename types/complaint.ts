@@ -35,6 +35,8 @@ export interface AITriageResult {
   priority: ComplaintPriority;
   language: ComplaintLanguage;
   confidence: number;
+  aiReasoning?: string;
+  processingMode?: 'GROQ' | 'LOCAL_FALLBACK';
   duplicateMatch?: DuplicateMatch;
 }
 
@@ -49,9 +51,13 @@ export interface Complaint {
   summary: string;
   category: ComplaintCategory;
   priority: ComplaintPriority;
+  aiPriority?: ComplaintPriority;
+  committeePriority?: ComplaintPriority;
   status: ComplaintStatus;
   language: ComplaintLanguage;
   confidence: number;
+  aiReasoning?: string;
+  processingMode?: 'GROQ' | 'LOCAL_FALLBACK';
   possibleDuplicateId?: string;
   possibleDuplicateTicket?: string;
   duplicateReason?: string;

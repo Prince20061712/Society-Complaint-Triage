@@ -34,6 +34,11 @@ export async function processComplaintTriage(
   const wing = extractWing(input.flatNumber);
   const vendor = getVendorForCategory(aiResult.category);
 
+  const isGroq = aiResult.processingMode === 'GROQ';
+  const triageNote = isGroq
+    ? `Groq AI triage executed: classified as ${aiResult.category} (${aiResult.priority}) in ${aiResult.language}`
+    : `Local fallback triage executed: classified as ${aiResult.category} (${aiResult.priority}) in ${aiResult.language}`;
+
   return {
     residentName: input.residentName,
     flatNumber: input.flatNumber,
@@ -43,16 +48,17 @@ export async function processComplaintTriage(
     summary: aiResult.summary,
     category: aiResult.category,
     priority: aiResult.priority,
+    aiPriority: aiResult.priority,
     status: 'OPEN',
     language: aiResult.language,
     confidence: aiResult.confidence,
+    aiReasoning: aiResult.aiReasoning,
+    processingMode: aiResult.processingMode || 'GROQ',
     possibleDuplicateId: dupCheck.isDuplicate ? dupCheck.duplicateOfId : undefined,
     possibleDuplicateTicket: dupCheck.isDuplicate ? dupCheck.duplicateOfTicket : undefined,
     duplicateReason: dupCheck.isDuplicate ? dupCheck.reason : undefined,
     vendorAlerted: vendor?.name,
     vendorPhone: vendor?.phone,
-    notes: [
-      `AI triage executed: classified as ${aiResult.category} (${aiResult.priority}) with language ${aiResult.language}`,
-    ],
+    notes: [triageNote],
   };
 }

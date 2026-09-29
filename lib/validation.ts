@@ -11,7 +11,7 @@ export function validateComplaintInput(data: any): { isValid: boolean; error?: s
 
   const residentName = String(data.residentName || '').trim();
   const flatNumber = String(data.flatNumber || '').trim();
-  const message = String(data.message || '').trim();
+  const message = String(data.message || data.rawMessage || '').trim();
 
   if (!residentName) {
     return { isValid: false, error: 'Resident name is required' };
