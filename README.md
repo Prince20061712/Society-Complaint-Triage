@@ -1,5 +1,6 @@
 # Society Complaint Triage
 
+> **Live Deployment:** [https://society-complaint-triage.vercel.app](https://society-complaint-triage.vercel.app)  
 > Built for **Vibe Coding Event 2026 — Day 1 (29th)**  
 > **Problem Statement #2:** Society Complaint Triage  
 > **Target Persona:** Housing Society Committee Volunteers (~100 flats)
@@ -87,5 +88,6 @@ The application includes a role-based login screen with one-touch demo credentia
 ## Participant Info
 
 - **Name:** Prince Gupta
-- **College ID:** [Your ID]
+- **College ID:** princegupta09372@gmail.com
+
 - **Day:** Day 1 (29th)
