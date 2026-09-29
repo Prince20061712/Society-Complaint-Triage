@@ -70,6 +70,15 @@ export const AppShell: React.FC<AppShellProps> = ({ children, activeCount = 0 })
   const isComplaints = pathname.startsWith('/complaints');
   const isResident = pathname === '/';
 
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch {
+      // ignore
+    }
+    window.location.href = '/login';
+  };
+
   return (
     <div className="bg-[#E0E5EC] min-h-screen text-[#3D4852] font-body w-full max-w-full overflow-x-clip">
       {/* ================= DESKTOP FIXED SIDEBAR (>= 1024px) ================= */}
@@ -160,6 +169,15 @@ export const AppShell: React.FC<AppShellProps> = ({ children, activeCount = 0 })
               <span className="text-[11px] text-[#6B7280] truncate">Hon. Secretary</span>
             </div>
           </div>
+
+          <button
+            onClick={handleLogout}
+            className="w-full py-2.5 px-3 rounded-2xl neu-btn flex items-center justify-center gap-2 text-xs font-bold text-[#E53E3E] hover:text-[#C53030] cursor-pointer transition-all"
+            title="Sign out of Committee session"
+          >
+            <span className="material-symbols-outlined text-[18px]">logout</span>
+            <span>Logout</span>
+          </button>
         </div>
       </aside>
 
@@ -266,6 +284,15 @@ export const AppShell: React.FC<AppShellProps> = ({ children, activeCount = 0 })
                   <span className="text-[10px] text-[#6B7280] truncate">Hon. Secretary</span>
                 </div>
               </div>
+
+              <button
+                onClick={handleLogout}
+                className="w-full py-2.5 px-3 rounded-2xl neu-btn flex items-center justify-center gap-2 text-xs font-bold text-[#E53E3E] hover:text-[#C53030] cursor-pointer transition-all"
+                title="Sign out of Committee session"
+              >
+                <span className="material-symbols-outlined text-[18px]">logout</span>
+                <span>Logout</span>
+              </button>
             </div>
           </div>
         </div>
@@ -326,6 +353,15 @@ export const AppShell: React.FC<AppShellProps> = ({ children, activeCount = 0 })
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl neu-inset-deep flex items-center justify-center text-[#6C63FF] shrink-0">
             <span className="material-symbols-outlined text-[18px] sm:text-[20px]">person</span>
           </div>
+
+          <button
+            onClick={handleLogout}
+            className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-2 rounded-2xl neu-btn text-xs font-bold text-[#E53E3E] hover:text-[#C53030] transition-all cursor-pointer min-h-[40px]"
+            title="Sign out of Committee session"
+          >
+            <span className="material-symbols-outlined text-[16px]">logout</span>
+            <span className="hidden sm:inline">Logout</span>
+          </button>
         </div>
       </header>
 

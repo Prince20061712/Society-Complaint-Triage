@@ -8,6 +8,8 @@ import { Complaint } from '@/types/complaint';
 
 export default function ResidentPortalPage() {
   const [recentComplaints, setRecentComplaints] = useState<Complaint[]>([]);
+  const [currentUser, setCurrentUser] = useState<{ name: string; role: string; flatNumber?: string } | null>(null);
+  const [accessNotice, setAccessNotice] = useState<string | null>(null);
 
   const fetchRecent = async () => {
     try {
@@ -15,7 +17,7 @@ export default function ResidentPortalPage() {
       if (res.ok) {
         const data = await res.json();
         if (data.complaints) {
-          setRecentComplaints(data.complaints.slice(0, 4));
+          setRecentComplaints(data.complaints.slice(0, 6));
         }
       }
     } catch (e) {
@@ -25,10 +27,35 @@ export default function ResidentPortalPage() {
 
   useEffect(() => {
     fetchRecent();
+
+    fetch('/api/auth/me')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.authenticated && d.user) {
+          setCurrentUser(d.user);
+        }
+      })
+      .catch(() => {});
+
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('denied') === 'committee_access_required') {
+        setAccessNotice('Committee access required. You have been directed to your Resident Portal.');
+      }
+    }
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch {
+      // ignore
+    }
+    window.location.href = '/login';
+  };
+
   const handleNewSubmission = (newComp: Complaint) => {
-    setRecentComplaints((prev) => [newComp, ...prev.slice(0, 3)]);
+    setRecentComplaints((prev) => [newComp, ...prev.slice(0, 5)]);
   };
 
   return (
@@ -50,16 +77,52 @@ export default function ResidentPortalPage() {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-          <Link
-            href="/dashboard"
-            className="inline-flex items-center gap-1.5 px-3.5 sm:px-5 py-2 sm:py-2.5 neu-btn text-xs font-bold text-[#6C63FF] hover:text-[#8B84FF] transition-all min-h-[44px]"
+          {currentUser?.role === 'COMMITTEE' && (
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-1.5 px-3.5 sm:px-5 py-2 sm:py-2.5 neu-btn text-xs font-bold text-[#6C63FF] hover:text-[#8B84FF] transition-all min-h-[44px]"
+            >
+              <span className="material-symbols-outlined text-[16px] sm:text-[18px]">dashboard</span>
+              <span className="hidden sm:inline">Committee Dashboard</span>
+              <span className="sm:hidden">Dashboard</span>
+            </Link>
+          )}
+
+          {currentUser?.role === 'RESIDENT' && (
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl neu-inset-sm text-xs font-bold text-[#3D4852]">
+              <span className="material-symbols-outlined text-[16px] text-[#38B2AC]">home</span>
+              <span>Resident {currentUser.flatNumber ? `(${currentUser.flatNumber})` : ''}</span>
+            </div>
+          )}
+
+          <button
+            onClick={handleLogout}
+            className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 neu-btn text-xs font-bold text-[#E53E3E] hover:text-[#C53030] transition-all min-h-[44px] cursor-pointer"
+            title="Sign out"
           >
-            <span className="material-symbols-outlined text-[16px] sm:text-[18px]">dashboard</span>
-            <span className="hidden sm:inline">Committee Dashboard</span>
-            <span className="sm:hidden">Dashboard</span>
-          </Link>
+            <span className="material-symbols-outlined text-[16px] sm:text-[18px]">logout</span>
+            <span className="hidden sm:inline">Logout</span>
+          </button>
         </div>
       </header>
+
+      {/* Access Denied Notice if redirected from Committee route */}
+      {accessNotice && (
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-4">
+          <div className="p-3.5 rounded-2xl neu-inset-sm text-xs font-semibold text-[#DD6B20] bg-[#FFFAF0]/50 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px]">lock</span>
+              <span>{accessNotice}</span>
+            </div>
+            <button
+              onClick={() => setAccessNotice(null)}
+              className="text-[#6B7280] hover:text-[#3D4852] cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[16px]">close</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Hero section */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-12 space-y-8 sm:space-y-10 w-full min-w-0">
@@ -79,30 +142,38 @@ export default function ResidentPortalPage() {
         {/* Neumorphic Complaint Form */}
         <ComplaintForm onSubmitted={handleNewSubmission} />
 
-        {/* Recent Society Queue */}
+        {/* Complaints Queue */}
         <div className="space-y-4 sm:space-y-6 pt-4 sm:pt-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2 gap-2">
             <div className="flex items-center gap-2.5 sm:gap-3">
               <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl neu-inset-deep flex items-center justify-center text-[#6C63FF] shrink-0">
-                <span className="material-symbols-outlined text-[18px] sm:text-[20px]">dynamic_feed</span>
+                <span className="material-symbols-outlined text-[18px] sm:text-[20px]">
+                  {currentUser?.role === 'RESIDENT' ? 'assignment' : 'dynamic_feed'}
+                </span>
               </div>
               <h3 className="font-display font-bold text-lg sm:text-xl text-[#3D4852] tracking-tight">
-                Recent Society Complaints
+                {currentUser?.role === 'RESIDENT' ? 'Your Submitted Tickets & Status' : 'Recent Society Complaints'}
               </h3>
             </div>
-            <Link
-              href="/complaints"
-              className="text-[#6C63FF] hover:text-[#8B84FF] text-xs font-bold flex items-center gap-1 transition-colors self-start sm:self-auto min-h-[36px]"
-            >
-              <span>View all on Complaints Register</span>
-              <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
-            </Link>
+            {currentUser?.role === 'COMMITTEE' && (
+              <Link
+                href="/complaints"
+                className="text-[#6C63FF] hover:text-[#8B84FF] text-xs font-bold flex items-center gap-1 transition-colors self-start sm:self-auto min-h-[36px]"
+              >
+                <span>View all on Complaints Register</span>
+                <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
+              </Link>
+            )}
           </div>
 
           <div className="space-y-3 sm:space-y-4">
-            {recentComplaints.map((c) => (
-              <ComplaintCard key={c.id} complaint={c} />
-            ))}
+            {recentComplaints.length === 0 ? (
+              <div className="p-6 rounded-2xl neu-inset-sm text-center text-xs text-[#6B7280]">
+                No complaints recorded yet for your flat. Submit your first issue above!
+              </div>
+            ) : (
+              recentComplaints.map((c) => <ComplaintCard key={c.id} complaint={c} />)
+            )}
           </div>
         </div>
       </main>
@@ -113,3 +184,4 @@ export default function ResidentPortalPage() {
     </div>
   );
 }
+

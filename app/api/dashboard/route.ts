@@ -1,8 +1,25 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getDashboardStats } from '@/lib/db';
+import { getAuthSession } from '@/lib/auth';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const session = await getAuthSession(request);
+
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Authentication required' },
+        { status: 401 }
+      );
+    }
+
+    if (session.role !== 'COMMITTEE') {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden: Committee access required' },
+        { status: 403 }
+      );
+    }
+
     const stats = await getDashboardStats();
     const isGroqConfigured = Boolean(process.env.GROQ_API_KEY);
     return NextResponse.json({
@@ -20,3 +37,4 @@ export async function GET() {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+

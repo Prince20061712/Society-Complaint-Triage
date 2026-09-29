@@ -2,9 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAllComplaints, resetDatabaseToDemoData, saveComplaint } from '@/lib/db';
 import { processComplaintTriage } from '@/lib/triage';
 import { validateComplaintInput } from '@/lib/validation';
+import { getAuthSession } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
+    const session = await getAuthSession(request);
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Authentication required' },
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status') || undefined;
     const priority = searchParams.get('priority') || undefined;
@@ -12,7 +21,16 @@ export async function GET(request: NextRequest) {
     const wing = searchParams.get('wing') || undefined;
     const search = searchParams.get('search') || undefined;
 
-    const complaints = await getAllComplaints({ status, priority, category, wing, search });
+    let complaints = await getAllComplaints({ status, priority, category, wing, search });
+
+    // Resident only sees their own complaints
+    if (session.role === 'RESIDENT') {
+      complaints = complaints.filter(
+        (c) =>
+          (session.flatNumber && c.flatNumber?.toLowerCase() === session.flatNumber.toLowerCase()) ||
+          (session.name && c.residentName?.toLowerCase() === session.name.toLowerCase())
+      );
+    }
 
     return NextResponse.json({
       success: true,
@@ -26,6 +44,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getAuthSession(request);
+    if (!session) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Authentication required' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const validation = validateComplaintInput(body);
 
@@ -52,13 +78,17 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    const session = await getAuthSession(request);
     const authHeader = request.headers.get('x-admin-key') || request.headers.get('authorization');
     const adminSecret = process.env.ADMIN_SECRET;
 
-    // In production on Vercel, guard against unrestricted public resets
-    if (process.env.NODE_ENV === 'production' && (!adminSecret || authHeader !== `Bearer ${adminSecret}`)) {
+    const hasAdminKey = Boolean(adminSecret && authHeader === `Bearer ${adminSecret}`);
+    const isDev = process.env.NODE_ENV !== 'production';
+
+    // In production, require ADMIN_SECRET. In development, require either ADMIN_SECRET or COMMITTEE role.
+    if (!hasAdminKey && !(isDev && session?.role === 'COMMITTEE')) {
       return NextResponse.json(
-        { success: false, error: 'Unauthorized: Demo database reset is restricted in production.' },
+        { success: false, error: 'Forbidden: Demo database reset is restricted to authorized administrators.' },
         { status: 403 }
       );
     }
@@ -74,3 +104,4 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+
