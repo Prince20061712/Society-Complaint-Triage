@@ -28,7 +28,11 @@ export async function analyzeComplaintWithAI(message: string, flatNumber: string
 
 async function callLLM(message: string, flatNumber: string, apiKey: string): Promise<AITriageResult | null> {
   // Supports Gemini or standard OpenAI-compatible endpoints
-  const isGemini = apiKey.startsWith('AIza') || process.env.AI_PROVIDER === 'gemini';
+  const isGemini =
+    apiKey.startsWith('AIza') ||
+    apiKey.startsWith('AQ.') ||
+    process.env.AI_PROVIDER === 'gemini' ||
+    Boolean(process.env.GEMINI_API_KEY);
 
   const systemPrompt = `You are an AI complaint triage assistant for a 100-flat residential housing society committee.
 Residents send complaints in English, Hindi, or Hinglish (Hindi written in Roman script).
